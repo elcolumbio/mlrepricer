@@ -35,3 +35,4 @@ mlrepricer/mlrepricer/configs.yaml
 - get data
 - dump all data in historic archive
 - use different approaches for modelling
+- use https://github.com/python-amazon-mws/python-amazon-mws to set new prices
