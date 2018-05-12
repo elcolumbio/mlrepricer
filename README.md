@@ -31,6 +31,8 @@ aws_secret_access_key = YOUR_SECRET_KEY
 
 We define all configs in:
 mlrepricer/mlrepricer/configs.yaml
+So copy that file anywhere. Best not in the repository, since it is sensible data.
+Define the path_to_config in the setup package.
 
 ## Objectives:
 - get data
