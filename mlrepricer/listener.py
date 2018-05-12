@@ -11,9 +11,9 @@ yaml = YAML(typ='unsafe')
 yaml.default_flow_style = False
 
 
-datafolder = setup.configs.datafolder
-region_name = setup.configs.region_name
-queuename = setup.configs.queuename
+datafolder = setup.configs['datafolder']
+region_name = setup.configs['region_name']
+queuename = setup.configs['queuename']
 
 sqsres = boto3.resource('sqs', region_name=region_name)
 sqs = boto3.client('sqs', region_name=region_name)

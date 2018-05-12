@@ -10,10 +10,10 @@ import setup
 yaml = YAML(typ='unsafe')
 yaml.default_flow_style = False
 
-datafolder = setup.configs.datafolder
-marketplaceid = setup.configs.marketplaceid
-ownsellerid = setup.configs.ownsellerid
-currencycode = setup.configs.currencycode
+datafolder = setup.configs['datafolder']
+marketplaceid = setup.configs['marketplaceid']
+ownsellerid = setup.configs['ownsellerid']
+currencycode = setup.configs['currencycode']
 
 
 def test_message_content(message):
