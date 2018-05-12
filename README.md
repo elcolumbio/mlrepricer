@@ -13,7 +13,7 @@ If yes we have to build all the basic parts first.
 
 So what type of problem we want to solve?
 
-## What it's not?
+## What it's not
 Run and install.
 Because everyone using different datadumps.
 And we want to focus on getting started to train models.
