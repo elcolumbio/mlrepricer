@@ -1,0 +1,9 @@
+# listener
+datafolder: None  # '/home/jeff/Nextcloud/data/mws/sub'
+region_name: None  # 'eu-central-1'
+queuename: None  # 'mwslisten'
+
+# parser
+marketplaceid: None  # 'A1PA6795UKMFR9'
+ownsellerid: None
+currencycode: None  # 'EUR'
