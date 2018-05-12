@@ -1,7 +1,8 @@
 # mlrepricer
+A python repricer project for Amazon Marketplace Sellers.
 
-You can use methods to easier access and train models.
-If we use the same features we can find a more accurate model.
+You can use methods for easy access and training models.
+If we use the same features we can find a more accurate model, together.
 A repricer model is quite complex.
 It's like scissors and papers with price elasticity and estimates about sales.
 For the start we can make it as simple as possible.
@@ -34,5 +35,6 @@ mlrepricer/mlrepricer/configs.yaml
 ## Objectives:
 - get data
 - dump all data in historic archive
-- use different approaches for modelling
+- simple method match cheapest price
 - use https://github.com/python-amazon-mws/python-amazon-mws to set new prices
+- use different approaches for modelling
