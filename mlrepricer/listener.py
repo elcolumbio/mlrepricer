@@ -53,14 +53,9 @@ def main():
         # get new queue, for new messages
         queue = sqsres.get_queue_by_name(QueueName=queuename)
         numbermessages = int(queue.attributes['ApproximateNumberOfMessages'])
-        if numbermessages > 20:
-            wait = 1
-        else:
-            wait = 4
         for _ in range(numbermessages):
             message = receive_message()['Messages'][0]
             # replace it with your processing method
             dump_message(message)
             delete_message(message)
-            time.sleep(wait)
         time.sleep(5)
