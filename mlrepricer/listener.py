@@ -18,6 +18,7 @@ queuename = setup.configs['queuename']
 
 sqsres = boto3.resource('sqs', region_name=region_name)
 sqs = boto3.client('sqs', region_name=region_name)
+queue = sqsres.get_queue_by_name(QueueName=queuename)
 
 
 def receive_message():
@@ -35,7 +36,7 @@ def dump_message(message):
     """Just an example of dumping the response."""
     messageid = message['MessageId']
     r = xmltodict.parse(message['Body'])
-    with open(f'{datafolder}/backup/{messageid}.yaml', 'w') as f:
+    with open(f'{datafolder}{messageid}.yaml', 'w') as f:
         yaml.dump(r, f)
 
 
@@ -47,18 +48,19 @@ def delete_message(message):
         ReceiptHandle=receipt_handle)
 
 
-while True:
-    # get new queue, for new messages
-    queue = sqsres.get_queue_by_name(QueueName=queuename)
-    numbermessages = int(queue.attributes['ApproximateNumberOfMessages'])
-    if numbermessages > 20:
-        wait = 1
-    else:
-        wait = 4
-    for _ in range(numbermessages):
-        message = receive_message()['Messages'][0]
-        # replace it with your processing method
-        dump_message(message)
-        delete_message(message)
-        time.sleep(wait)
-    time.sleep(5)
+def main():
+    while True:
+        # get new queue, for new messages
+        queue = sqsres.get_queue_by_name(QueueName=queuename)
+        numbermessages = int(queue.attributes['ApproximateNumberOfMessages'])
+        if numbermessages > 20:
+            wait = 1
+        else:
+            wait = 4
+        for _ in range(numbermessages):
+            message = receive_message()['Messages'][0]
+            # replace it with your processing method
+            dump_message(message)
+            delete_message(message)
+            time.sleep(wait)
+        time.sleep(5)
