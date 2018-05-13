@@ -44,6 +44,10 @@ We define all configs in a yaml file.
 So copy mlrepricer/mlrepricer/configs.yaml to the default location ~/.config/mlrepricer/configs.yaml .
 Or change the path_to_config in the setup package.
 
+## Installation
+You can clon it locally and cd into the top level folder.
+and install it with: pip install .
+
 ## Objectives:
 - get data
 - dump all data in historic archive
