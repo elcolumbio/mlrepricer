@@ -48,6 +48,16 @@ Or change the path_to_config in the setup package.
 You can clon it locally and cd into the top level folder.
 and install it with: pip install .
 
+## Usage
+this shoud work right now:
+
+from mlrepricer import helper
+from mlrepricer import listener, parser
+
+listener()  # will pull and delete messages from sqs forever
+
+helper.load_dataframe()   # returns the cleaned dataframe
+
 ## Objectives:
 - get data
 - dump all data in historic archive
