@@ -4,7 +4,7 @@
 
 from ruamel.yaml import YAML
 
-path_to_config = None  # '/home/jeff/'
+path_to_config = '/home/flo/.config/mlrepricer/configs.yaml'  # '/home/jeff/'
 
 if path_to_config is None:
     raise ValueError('path_to_config canot be empty')

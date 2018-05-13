@@ -6,13 +6,15 @@ from ruamel.yaml import YAML
 import os
 import datetime
 import setup
+import pandas as pd
+
+from . import helper
 
 yaml = YAML(typ='unsafe')
 yaml.default_flow_style = False
 
-datafolder = setup.configs['datafolder']
+datafolder = f"{setup.configs['datafolder']}sub/"
 marketplaceid = setup.configs['marketplaceid']
-ownsellerid = setup.configs['ownsellerid']
 currencycode = setup.configs['currencycode']
 
 
@@ -23,7 +25,6 @@ def test_message_content(message):
         'AnyOfferChangedNotification']['OfferChangeTrigger']
     assert metadata['MarketplaceId'] == marketplaceid
     assert metadata['NotificationType'] == 'AnyOfferChanged'
-    assert metadata['SellerId'] == ownsellerid
     assert metadata['PayloadVersion'] == '1.0'
     assert payload['MarketplaceId'] == marketplaceid
     assert payload['ItemCondition'] == 'new'
@@ -79,3 +80,6 @@ for filename in os.listdir(datafolder)[:1]:
         'AnyOfferChangedNotification']
     newrows = parse_offers(payload)
     resultlist += newrows
+
+df = pd.DataFrame(resultlist)
+helper.dump_dataframe(df)

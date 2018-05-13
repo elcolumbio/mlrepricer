@@ -1,5 +1,5 @@
 # listener
-datafolder: None  # '/home/jeff/Nextcloud/data/mws/sub'
+datafolder: '/home/flo/Nextcloud/data/mws/sub'  # '/home/jeff/Nextcloud/data/mws/sub'
 region_name: None  # 'eu-central-1'
 queuename: None  # 'mwslisten'
 

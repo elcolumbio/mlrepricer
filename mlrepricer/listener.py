@@ -5,13 +5,14 @@ import boto3
 from ruamel.yaml import YAML
 import xmltodict
 import time
-import setup
+
+from . import setup
 
 yaml = YAML(typ='unsafe')
 yaml.default_flow_style = False
 
 
-datafolder = setup.configs['datafolder']
+datafolder = f"{setup.configs['datafolder']}sub/"
 region_name = setup.configs['region_name']
 queuename = setup.configs['queuename']
 
@@ -34,7 +35,7 @@ def dump_message(message):
     """Just an example of dumping the response."""
     messageid = message['MessageId']
     r = xmltodict.parse(message['Body'])
-    with open(f'{datafolder}{messageid}.yaml', 'w') as f:
+    with open(f'{datafolder}/backup/{messageid}.yaml', 'w') as f:
         yaml.dump(r, f)
 
 
