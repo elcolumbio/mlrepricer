@@ -18,7 +18,7 @@ marketplaceid = setup.configs['marketplaceid']
 currencycode = setup.configs['currencycode']
 
 
-def test_message_content(message):
+def validate_message_content(message):
     """Validatation."""
     metadata = message['Notification']['NotificationMetaData']
     payload = message['Notification']['NotificationPayload'][
@@ -41,6 +41,10 @@ def parse_offers(payload):
 
     for offer in payload['Offers']['Offer']:
         # attributes per offer
+        if isinstance(offer, str):
+            # bad format
+            print(filename, offer)
+            continue
         assert offer['SubCondition'] == 'new'
         assert offer['ListingPrice']['CurrencyCode'] == currencycode
         assert offer['Shipping']['CurrencyCode'] == currencycode
@@ -75,16 +79,25 @@ def parse_offers(payload):
     return resultlist
 
 
-resultlist = []
-for filename in os.listdir(datafolder)[:1]:
-    with open(datafolder + filename, 'r') as f:
-        message = yaml.load(f)
-    test_message_content(message)
+def main():
+    global filename
+    resultlist = []
+    for filename in os.listdir(datafolder):
+        with open(datafolder + filename, 'r') as f:
+            message = yaml.load(f)
+        if message is None or isinstance(message, str):
+            print(filename, message)
+            continue
+        validate_message_content(message)
 
-    payload = message['Notification']['NotificationPayload'][
-        'AnyOfferChangedNotification']
-    newrows = parse_offers(payload)
-    resultlist += newrows
+        payload = message['Notification']['NotificationPayload'][
+            'AnyOfferChangedNotification']
+        newrows = parse_offers(payload)
+        resultlist += newrows
 
-df = pd.DataFrame(resultlist)
-helper.dump_dataframe(df)
+    df = pd.DataFrame(resultlist)
+    helper.dump_dataframe(df)
+
+
+if __name__ == '__main__':
+    main()

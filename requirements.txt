@@ -1,0 +1,5 @@
+ruamel.yaml
+xmltodict
+boto3
+mws
+pytest
