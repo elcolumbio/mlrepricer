@@ -14,6 +14,15 @@ ruamel
 xmltodict
 pandas
 
+## Data structure
+Define a datafolder.
+- datafolder/
+    - sub/    <- here we put all messages as single files, so we can rebuild our features.
+    - alldata    <- this is the msgpack datafram we work with, it's cleaned and ready to use for training.
+    
+ it's a lot of data we might do this more clever. Right now it seems to work, it should not take too much space.
+ 7.011 items, totalling 46,5 MB
+
 ## Questions to ask
 Should we start with continously evaluating the outcome?
 If yes we have to build all the basic parts first.
