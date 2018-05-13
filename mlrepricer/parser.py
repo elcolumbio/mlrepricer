@@ -5,9 +5,9 @@
 from ruamel.yaml import YAML
 import os
 import datetime
-import setup
 import pandas as pd
 
+from . import setup
 from . import helper
 
 yaml = YAML(typ='unsafe')
@@ -42,18 +42,23 @@ def parse_offers(payload):
     for offer in payload['Offers']['Offer']:
         # attributes per offer
         assert offer['SubCondition'] == 'new'
-        sellerid = offer['SellerId']
-        isprime = offer['IsFulfilledByAmazon'] == 'true'
         assert offer['ListingPrice']['CurrencyCode'] == currencycode
         assert offer['Shipping']['CurrencyCode'] == currencycode
+
+        # categorial
+        sellerid = offer['SellerId']
+
+        # booleans
+        isprime = int(offer['IsFulfilledByAmazon'] == 'true')
+        isbuyboxwinner = int(offer['IsBuyBoxWinner'] == 'true')
+        isfeaturedmerchant = int(offer['IsFeaturedMerchant'] == 'true')
+        instock = int(offer['ShippingTime']['@availabilityType'] == 'NOW')
+
         price_total = float(offer['ListingPrice']['Amount']) + float(
             offer['Shipping']['Amount'])
-        isbuyboxwinner = offer['IsBuyBoxWinner'] == 'true'
-        isfeaturedmerchant = offer['IsFeaturedMerchant'] == 'true'
         feedbackcount = int(offer['SellerFeedbackRating']['FeedbackCount'])
         pfeedbackpercent = int(
             offer['SellerFeedbackRating']['SellerPositiveFeedbackRating'])
-        shipping_avail = offer['ShippingTime']['@availabilityType']
         shipping_maxhours = int(offer['ShippingTime']['@maximumHours'])
         shipping_minhours = int(offer['ShippingTime']['@minimumHours'])
         # shippingfrom = offer['ShipsFrom']['Country'] only if not prime
@@ -61,9 +66,9 @@ def parse_offers(payload):
         row_dict = dict(
             time_changed=time_changed, asin=asin, sellerid=sellerid,
             price=price_total, isbuyboxwinner=isbuyboxwinner,
-            feedbackcount=feedbackcount, pfeedbackpercent=pfeedbackpercent,
+            feedback=feedbackcount, feedbackpercent=pfeedbackpercent,
             isfeaturedmerchant=isfeaturedmerchant,
-            shipping_avail=shipping_avail, shipping_maxhours=shipping_maxhours,
+            instock=instock, shipping_maxhours=shipping_maxhours,
             shipping_minhours=shipping_minhours, isprime=isprime)
 
         resultlist.append(row_dict)

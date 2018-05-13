@@ -1,6 +1,13 @@
 # -*- coding: utf-8 -*-
 
-"""Runs like a demon."""
+"""
+Get messages save them locally and delete them from the queue.
+
+It's very fast we get thousands messages per minute.
+If the queue is empty we sleep for 20 seconds.
+We store the messages in yamlfiles, it will create some markers like !!omap.
+Besides that we use it for readability.
+"""
 import boto3
 from ruamel.yaml import YAML
 import xmltodict
