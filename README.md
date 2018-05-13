@@ -45,8 +45,19 @@ So copy mlrepricer/mlrepricer/configs.yaml to the default location ~/.config/mlr
 Or change the path_to_config in the setup package.
 
 ## Installation
-You can clon it locally and cd into the top level folder.
+You can clone it locally and cd into the top level folder.
 and install it with: pip install .
+
+## Usage
+this shoud work right now:
+```python
+from mlrepricer import helper
+from mlrepricer import listener, parser
+
+listener()  # will pull and delete messages from sqs forever
+
+helper.load_dataframe()  # returns the cleaned dataframe
+```
 
 ## Objectives:
 - get data
