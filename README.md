@@ -30,8 +30,9 @@ If yes we have to build all the basic parts first.
 So what type of problem we want to solve?
 
 ## How to get started?
-Boto3 looks for credentials in:
 
+
+Setup Boto3 credentials for aws sqs:
 ~/.aws/credentials:
 ```
 [default]
@@ -39,10 +40,9 @@ aws_access_key_id = YOUR_ACCESS_KEY
 aws_secret_access_key = YOUR_SECRET_KEY
 ```
 
-We define all configs in:
-mlrepricer/mlrepricer/configs.yaml
-So copy that file anywhere. Best not in the repository, since it is sensible data.
-Define the path_to_config in the setup package.
+We define all configs in a yaml file.
+So copy mlrepricer/mlrepricer/configs.yaml to the default location ~/.config/mlrepricer/configs.yaml .
+Or change the path_to_config in the setup package.
 
 ## Objectives:
 - get data
