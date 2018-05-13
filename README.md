@@ -61,7 +61,9 @@ helper.load_dataframe()  # returns the cleaned dataframe
 
 ## Objectives:
 - get data
-- dump all data in historic archive
-- simple method match cheapest price
-- use https://github.com/python-amazon-mws/python-amazon-mws to set new prices
-- use different approaches for modelling
+- dump all data in historic archive [  ]
+- simple method match cheapest price [ ]
+- use https://github.com/python-amazon-mws/python-amazon-mws to set new prices [ ]
+- use different approaches for modelling [ ]
+
+- nice visualizations with altair to get some insights [ ]
