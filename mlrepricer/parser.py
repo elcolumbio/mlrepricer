@@ -49,23 +49,25 @@ def parse_offers(payload):
         assert offer['ListingPrice']['CurrencyCode'] == currencycode
         assert offer['Shipping']['CurrencyCode'] == currencycode
 
-        # categorial
+        # quantative, real valued
+        price_total = float(offer['ListingPrice']['Amount']) + float(
+            offer['Shipping']['Amount'])
+        feedbackcount = int(offer['SellerFeedbackRating']['FeedbackCount'])
+        pfeedbackpercent = int(
+            offer['SellerFeedbackRating']['SellerPositiveFeedbackRating'])
+
+        # nominal, unordered categorical
         sellerid = offer['SellerId']
+
+        # ordinal, ordered categorical
+        shipping_maxhours = int(offer['ShippingTime']['@maximumHours'])
+        shipping_minhours = int(offer['ShippingTime']['@minimumHours'])
 
         # booleans
         isprime = int(offer['IsFulfilledByAmazon'] == 'true')
         isbuyboxwinner = int(offer['IsBuyBoxWinner'] == 'true')
         isfeaturedmerchant = int(offer['IsFeaturedMerchant'] == 'true')
         instock = int(offer['ShippingTime']['@availabilityType'] == 'NOW')
-
-        price_total = float(offer['ListingPrice']['Amount']) + float(
-            offer['Shipping']['Amount'])
-        feedbackcount = int(offer['SellerFeedbackRating']['FeedbackCount'])
-        pfeedbackpercent = int(
-            offer['SellerFeedbackRating']['SellerPositiveFeedbackRating'])
-        shipping_maxhours = int(offer['ShippingTime']['@maximumHours'])
-        shipping_minhours = int(offer['ShippingTime']['@minimumHours'])
-        # shippingfrom = offer['ShipsFrom']['Country'] only if not prime
 
         row_dict = dict(
             time_changed=time_changed, asin=asin, sellerid=sellerid,
@@ -86,7 +88,7 @@ def main():
         with open(datafolder + filename, 'r') as f:
             message = yaml.load(f)
         if message is None or isinstance(message, str):
-            print(filename, message)
+            # print(filename, message)
             continue
         validate_message_content(message)
 
