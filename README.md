@@ -1,5 +1,8 @@
 # mlrepricer
 A python repricer project for Amazon Marketplace Sellers.
+### price volatility of buyboxwinners
+
+![volatility](https://innotrade24.com/index.php/s/RR9WWwGgFJGXjTL/preview)
 
 You can use methods for easy access and training models.
 If we use the same features we can find a more accurate model, together.
