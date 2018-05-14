@@ -1,5 +1,7 @@
 # mlrepricer
-A python repricer project for Amazon Marketplace Sellers.
+A python pricing analysis project for Amazon Marketplace Sellers.
+Plus we provide the basic box where you can run your ml algorithms.
+
 ### price volatility of buyboxwinners
 
 ![volatility](https://innotrade24.com/index.php/s/RR9WWwGgFJGXjTL/preview)
