@@ -5,3 +5,5 @@ mlrepricer/__pycache__/
 __pycache__/
 
 \.pytest_cache/
+
+jupyter/\.ipynb_checkpoints/

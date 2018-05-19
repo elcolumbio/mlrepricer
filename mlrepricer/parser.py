@@ -43,7 +43,7 @@ def parse_offers(payload):
         # attributes per offer
         if isinstance(offer, str):
             # bad format
-            print(filename, offer)
+            # print(filename, offer)
             continue
         assert offer['SubCondition'] == 'new'
         assert offer['ListingPrice']['CurrencyCode'] == currencycode
