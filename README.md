@@ -1,4 +1,9 @@
 # mlrepricer
+
+We provide you some modules you can use in your existing infrastructure.
+It should be very easy to do so.
+To support this we also have schema validations.
+
 A python pricing analysis project for Amazon Marketplace Sellers.
 Plus we provide the basic box where you can run your ml algorithms.
 
@@ -59,7 +64,7 @@ this shoud work right now:
 from mlrepricer import helper
 from mlrepricer import listener, parser
 
-listener()  # will pull and delete messages from sqs forever
+listener.main()  # will pull and delete messages from sqs forever
 
 helper.load_dataframe()  # returns the cleaned dataframe
 ```
