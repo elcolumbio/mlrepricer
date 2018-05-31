@@ -21,6 +21,7 @@ For the start we can make it as simple as possible.
 If this is going very well, we will build a live repricer which is constantly learning.
 
 ## Dependencies
+We are supporting the mws python api sdk: https://github.com/python-amazon-mws/python-amazon-mws
 boto3
 ruamel
 xmltodict
