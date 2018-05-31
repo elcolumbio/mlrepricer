@@ -1,4 +1,11 @@
 # mlrepricer
+
+We provide you some modules you can use in your existing infrastructure.
+It should be very easy to do so.
+To support this we also have schema validations.
+
+![](https://innotrade24.com/index.php/s/AQb8HB3PZ2XEBSJ/preview)
+
 A python pricing analysis project for Amazon Marketplace Sellers.
 Plus we provide the basic box where you can run your ml algorithms.
 
@@ -14,6 +21,7 @@ For the start we can make it as simple as possible.
 If this is going very well, we will build a live repricer which is constantly learning.
 
 ## Dependencies
+We are supporting the mws python api sdk: https://github.com/python-amazon-mws/python-amazon-mws
 boto3
 ruamel
 xmltodict
@@ -59,7 +67,7 @@ this shoud work right now:
 from mlrepricer import helper
 from mlrepricer import listener, parser
 
-listener()  # will pull and delete messages from sqs forever
+listener.main()  # will pull and delete messages from sqs forever
 
 helper.load_dataframe()  # returns the cleaned dataframe
 ```
