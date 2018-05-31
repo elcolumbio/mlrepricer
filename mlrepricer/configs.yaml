@@ -4,6 +4,11 @@ region_name: None  # 'eu-central-1'
 queuename: None  # 'mwslisten'
 
 # parser
-marketplaceid: None  # 'A1PA6795UKMFR9'
+region: None  # one of: CA, US, DE, ES, FR, IN, IT, UK, JP, CN, MX
 ownsellerid: None
 currencycode: None  # 'EUR'
+
+# update prices, mws credentials
+access_key: None
+secret_key: None
+account_id: None

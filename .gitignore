@@ -7,3 +7,7 @@ __pycache__/
 \.pytest_cache/
 
 jupyter/\.ipynb_checkpoints/
+
+jupyter/chart\.svg
+
+jupyter/

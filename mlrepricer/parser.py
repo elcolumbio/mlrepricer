@@ -14,7 +14,7 @@ yaml = YAML(typ='unsafe')
 yaml.default_flow_style = False
 
 datafolder = f"{setup.configs['datafolder']}sub/"
-marketplaceid = setup.configs['marketplaceid']
+marketplaceid = helper.MARKETPLACES[setup.configs['region']]
 currencycode = setup.configs['currencycode']
 
 
