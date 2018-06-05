@@ -6,14 +6,13 @@ import mws
 
 from . import setup
 
-dataframefolder = f"{setup.configs['datafolder']}/alldata"
+datafolder = setup.configs['datafolder']
 
 mwscred = {
-        'access_key': setup.configs['access_key'],
-        'secret_key': setup.configs['secret_key'],
-        'account_id': setup.configs['account_id'],
-        'region': setup.configs['region']
-    }
+    'access_key': setup.configs['access_key'],
+    'secret_key': setup.configs['secret_key'],
+    'account_id': setup.configs['account_id'],
+    'region': setup.configs['region']}
 
 MARKETPLACES = {
     "CA": 'A2EUQ1WTGCTBG2',
@@ -29,15 +28,15 @@ MARKETPLACES = {
     "MX": 'A1AM78C64UM0Y8'}
 
 
-def dump_dataframe(df):
+def dump_dataframe(df, foldername):
     """Dump pandas df for storage."""
-    with open(dataframefolder, 'wb') as f:
+    with open(datafolder+foldername, 'wb') as f:
         df.to_msgpack(f)
 
 
-def load_dataframe():
+def load_dataframe(foldername):
     """Load pandas df from storage."""
-    with open(dataframefolder, 'rb') as f:
+    with open(datafolder+foldername, 'rb') as f:
         return pd.read_msgpack(f)
 
 

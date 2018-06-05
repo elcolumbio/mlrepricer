@@ -14,12 +14,12 @@ from helper import mwscred
 class Mapping(threading.Thread):
     def run(self):
         print(f'Starting {self.name}')
-        report = get_report()
+        report = get_report(ReportType.ACTIVE_LISTINGS.value)
         match(report)
         print(f'Exiting {self.name}')
 
 
-def get_report(report_name=ReportType.ACTIVE_LISTINGS.value):
+def get_report(report_name):
     """Call reports easy."""
     report_api = mws.apis.Reports(**mwscred)
     request_response = report_api.request_report(report_name)
@@ -49,4 +49,4 @@ def match(report):
     nocollusion = listingperasin[listingperasin.loc[:, 'count'] == 1]
     nocollusion.reset_index(level=['asin1'], inplace=True)
     nocollusion.reset_index(level=['fulfillment-channel'], inplace=True)
-    return nocollusion
+    helper.dump_dataframe(nocollusion)
