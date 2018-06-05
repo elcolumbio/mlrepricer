@@ -2,24 +2,28 @@
 # -*- coding: utf-8 -*-
 
 import mws
-from mws.apis.reports import AllReports
-from mlrepricer import setup
+from mws.apis.reports import ReportType
 import pandas as pd
 import io
+import threading
 
-mwscred = {
-        'access_key': setup.configs['access_key'],
-        'secret_key': setup.configs['secret_key'],
-        'account_id': setup.configs['account_id'],
-        'region': setup.configs['region']
-    }
+import helper
+from helper import mwscred
 
 
-def get_report(report_name=AllReports.ACTIVE_LISTINGS.value):
+class Mapping(threading.Thread):
+    def run(self):
+        print(f'Starting {self.name}')
+        report = get_report()
+        match(report)
+        print(f'Exiting {self.name}')
+
+
+def get_report(report_name=ReportType.ACTIVE_LISTINGS.value):
     """Call reports easy."""
     report_api = mws.apis.Reports(**mwscred)
     request_response = report_api.request_report(report_name)
-    report_id = report_api.get_reportid(request_response)
+    report_id = helper.ReportThread(request_response, 1)
     if report_id:
         report = report_api.get_report(report_id).parsed
     # the result is a correct decoded string

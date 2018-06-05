@@ -12,6 +12,7 @@ import boto3
 from ruamel.yaml import YAML
 import xmltodict
 import time
+import threading
 
 from . import setup
 
@@ -26,6 +27,13 @@ queuename = setup.configs['queuename']
 sqsres = boto3.resource('sqs', region_name=region_name)
 sqs = boto3.client('sqs', region_name=region_name)
 queue = sqsres.get_queue_by_name(QueueName=queuename)
+
+
+class Listener (threading.Thread):
+    def run(self):
+        print(f'Starting {self.name}')
+        main()
+        print(f'Exiting {self.name}')
 
 
 def receive_message():
