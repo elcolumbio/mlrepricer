@@ -4,7 +4,7 @@ We provide you some modules you can use in your existing infrastructure.
 It should be very easy to do so.
 To support this we also have schema validations.
 
-![](https://innotrade24.com/index.php/s/AQb8HB3PZ2XEBSJ/preview)
+![](https://innotrade24.com/index.php/s/sdoLejCqS3j7agQ/preview)
 
 A python pricing analysis project for Amazon Marketplace Sellers.
 Plus we provide the basic box where you can run your ml algorithms.
