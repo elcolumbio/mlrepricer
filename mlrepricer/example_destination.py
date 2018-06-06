@@ -32,3 +32,17 @@ class AzureTarget():
             self.conn_data['host'], self.conn_data['port'],
             self.database)
         return create_engine(pymssqltext)
+
+    @property
+    def conn(self):
+        return self.connection_engine()
+
+    @property
+    def dtypes(self):
+        return dict(zip(self.mapping.keys(), [item[0] for item in list(
+            self.mapping.values())]))
+
+    @property
+    def nullable(self):
+        return dict(zip(self.mapping.keys(), [item[1] for item in list(
+            self.mapping.values())]))

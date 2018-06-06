@@ -54,7 +54,7 @@ def match(report):
     # When fulfillment-channel is DEFAULT its seller fulfilled
     nocollusion['isprime'] = np.where(
         nocollusion['fulfillment-channel'] == 'DEFAULT', 0, 1)
-    nocollusion.drop(['fulfillment-channel', 'count'], axis=1)
+    nocollusion.drop(['fulfillment-channel', 'count'], axis=1, inplace=True)
     nocollusion.rename(
         {'asin1': 'asin', 'seller-sku': 'seller_sku'}, axis=1, inplace=True)
-    helper.dump_dataframe(nocollusion, 'nocollusion')
+    helper.dump_dataframe(nocollusion, 'mapping')
