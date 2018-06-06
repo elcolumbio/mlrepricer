@@ -59,3 +59,22 @@ class PriceMonitorRecent(Target):
     @property
     def conn(self):
         return self.connection_engine()
+
+
+class Mapping(Target):
+    """
+    For each table define a class which inherits from the Destination class.
+    """
+    table = 'mapping'
+    if_exists = 'replace'
+
+    @property
+    def mapping(self):
+        return {
+            'asin': (self.textshort, False),
+            'seller_sku': (self.textmiddle, False),
+            'isprime': (self.booly, False)}
+
+    @property
+    def conn(self):
+        return self.connection_engine()

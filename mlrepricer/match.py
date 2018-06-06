@@ -6,6 +6,7 @@ from mws.apis.reports import ReportType
 import pandas as pd
 import io
 import threading
+import numpy as np
 
 from . import helper
 
@@ -48,4 +49,12 @@ def match(report):
     nocollusion = listingperasin[listingperasin.loc[:, 'count'] == 1]
     nocollusion.reset_index(level=['asin1'], inplace=True)
     nocollusion.reset_index(level=['fulfillment-channel'], inplace=True)
+
+    # we do some final cleanup and reorganize columns
+    # When fulfillment-channel is DEFAULT its seller fulfilled
+    nocollusion['isprime'] = np.where(
+        nocollusion['fulfillment-channel'] == 'DEFAULT', 0, 1)
+    nocollusion.drop(['fulfillment-channel', 'count'], axis=1)
+    nocollusion.rename(
+        {'asin1': 'asin', 'seller-sku': 'seller_sku'}, axis=1, inplace=True)
     helper.dump_dataframe(nocollusion, 'nocollusion')
