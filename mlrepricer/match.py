@@ -7,8 +7,7 @@ import pandas as pd
 import io
 import threading
 
-import helper
-from helper import mwscred
+from . import helper
 
 
 class Mapping(threading.Thread):
@@ -21,9 +20,9 @@ class Mapping(threading.Thread):
 
 def get_report(report_name):
     """Call reports easy."""
-    report_api = mws.apis.Reports(**mwscred)
+    report_api = mws.apis.Reports(**helper.mwscred)
     request_response = report_api.request_report(report_name)
-    report_id = helper.ReportThread(request_response, 1)
+    report_id = helper.auto_get_report_id(request_response)
     if report_id:
         report = report_api.get_report(report_id).parsed
     # the result is a correct decoded string
@@ -49,4 +48,4 @@ def match(report):
     nocollusion = listingperasin[listingperasin.loc[:, 'count'] == 1]
     nocollusion.reset_index(level=['asin1'], inplace=True)
     nocollusion.reset_index(level=['fulfillment-channel'], inplace=True)
-    helper.dump_dataframe(nocollusion)
+    helper.dump_dataframe(nocollusion, 'nocollusion')
