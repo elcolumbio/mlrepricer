@@ -1,10 +1,13 @@
 # mlrepricer
 
+It's just being at the very start, we put things together.
+At the end of June 2018 we want have a beta version.
+
 We provide you some modules you can use in your existing infrastructure.
 It should be very easy to do so.
 To support this we also have schema validations.
 
-![](https://innotrade24.com/index.php/s/sdoLejCqS3j7agQ/preview)
+![](https://innotrade24.com/index.php/s/f8y4opak4BKes3J/preview)
 
 A python pricing analysis project for Amazon Marketplace Sellers.
 Plus we provide the basic box where you can run your ml algorithms.
