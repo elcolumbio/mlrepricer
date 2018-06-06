@@ -1,14 +1,28 @@
-# listener
+# copy this file into
+# path_to_config = f'{homedir}/.config/mlrepricer/configs.yaml
+
+# listener, your aws data
 datafolder: '/home/flo/Nextcloud/data/mws/sub'  # '/home/jeff/Nextcloud/data/mws/sub'
 region_name: None  # 'eu-central-1'
 queuename: None  # 'mwslisten'
 
-# parser
+# parser, your mws credentials
 region: None  # one of: CA, US, DE, ES, FR, IN, IT, UK, JP, CN, MX
 ownsellerid: None
 currencycode: None  # 'EUR'
 
-# update prices, mws credentials
+# update prices, your mws credentials
 access_key: None
 secret_key: None
 account_id: None
+
+# your own datadumps, you are completely free to change the attributes
+AzureSQL:
+    host: None
+    database: None
+    user: None
+    password: None
+    hostname: None
+    port: None
+    username: None
+    driver: None

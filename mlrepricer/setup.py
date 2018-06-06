@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""Read config."""
+"""Read config, an example Yaml you can find in configs.yaml."""
 import os
 from ruamel.yaml import YAML
 
