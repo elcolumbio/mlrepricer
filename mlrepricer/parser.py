@@ -98,7 +98,7 @@ def main():
         resultlist += newrows
 
     df = pd.DataFrame(resultlist)
-    helper.dump_dataframe(df)
+    helper.dump_dataframe(df, 'alldata')
 
 
 if __name__ == '__main__':
