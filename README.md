@@ -7,6 +7,24 @@ We provide you some modules you can use in your existing infrastructure.
 It should be very easy to do so.
 To support this we also have schema validations.
 
+This is not a repricer. It should be used for statistical and ml analysis of your data.
+It would be nice if we share statistic analysis and discuss them and validate them.
+The data on it's own is not valueable. Still i think we shouldn't share it.
+# But let's share models and the analysis itself
+I already started to look at the linear regression for nonprime and prime listings.
+
+# I think every amazon merchant should do some statistical analysis.
+If you know some python, we should help them.
+
+# Where are we going?
+There won't be a service ever. You can see that by how flexible we build it, for datastorage, modularity.
+We rather want to take some of the heavy lifting when you handle price data.
+That's not only mws related. I like to start implementing some eBay prices too.
+Also we should be able to validate flexible metadata from your ERP.
+Really our strength is to offer building blocks for things everyone would spend hours to solve problems.
+Where hundreds of people already solved this.
+Instead you maybe want make this framework better:)
+
 ![](https://innotrade24.com/index.php/s/f8y4opak4BKes3J/preview)
 
 A python pricing analysis project for Amazon Marketplace Sellers.
@@ -46,7 +64,7 @@ If yes we have to build all the basic parts first.
 So what type of problem we want to solve?
 
 ## How to get started?
-
+For more uptodate guides please check out the notebooks.
 
 Setup Boto3 credentials for aws sqs:
 ~/.aws/credentials:
