@@ -2,40 +2,42 @@
 from sqlalchemy import types
 from sqlalchemy import create_engine
 
-from mlrepricer import setup
+from .. import setup
 
 
-class AzureTarget():
+class AzureSQL:
     """
-    For each data destination like MSSQL on Azure define your own ParentClass.
+    For each data destination like MSSQL define your own ParentClass.
+
+    You can even leverage another metaclass like we do here with
+    sqlalchemy.types.
     """
 
     def __init__(self):
         # dtypes
-        self.textshort = types.NVARCHAR(length=40)
-        self.textmiddle = types.NVARCHAR(length=400)
-        self.textlong = types.NVARCHAR(length=4000)  # 4000 is max for nvarchar
-        self.floaty = types.Float
-        self.inty = types.INTEGER
-        self.datey = types.DATE
-        self.datetimey = types.DATETIME
-        self.timey = types.TIME
-        self.booly = types.BINARY
+        self._textshort = types.NVARCHAR(length=40)
+        self._textmiddle = types.NVARCHAR(length=400)
+        self._textlong = types.NVARCHAR(length=4000)  # NVARCH4000 is max
+        self._floaty = types.Float
+        self._inty = types.INTEGER
+        self._datey = types.DATE
+        self._datetimey = types.DATETIME
+        self._timey = types.TIME
+        self._booly = types.BINARY
 
-        # connection data, pls change it in your setup yaml file
-        self.conn_data = setup.configs['AzureSQL']
-
-    def connection_engine(self):
-        pymssqltext = 'mssql+pymssql://{}@{}:{}@{}:{}/{}'.format(
-            self.conn_data['username'], self.conn_data['hostname'],
-            self.conn_data['password'],
-            self.conn_data['host'], self.conn_data['port'],
-            self.database)
-        return create_engine(pymssqltext)
+        # connection data, pls change it
+        self._conn_data = setup.configs()['AzureSQL']
 
     @property
     def conn(self):
-        return self.connection_engine()
+        pymssqltext = 'mssql+pymssql://{}@{}:{}@{}:{}/{}'.format(
+            self._conn_data['username'],
+            self._conn_data['hostname'],
+            self._conn_data['password'],
+            self._conn_data['host'],
+            self._conn_data['port'],
+            self._conn_data['database'])
+        return create_engine(pymssqltext)
 
     @property
     def dtypes(self):
