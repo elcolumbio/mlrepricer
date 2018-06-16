@@ -86,8 +86,8 @@ class SQLite:
             Column('ID', Integer, primary_key=True),
             *(Column(columnz, dtypez, nullable=self.nullable[columnz]
                      ) for columnz, dtypez in self.dtypes.items()))
-        # if tabletocreate.exists():
-        tabletocreate.create()
+        if not tabletocreate.exists():
+            tabletocreate.create()
 
 
 class AzureSQL:
@@ -148,5 +148,5 @@ class AzureSQL:
             Column('ID', Integer, primary_key=True),
             *(Column(columnz, dtypez, nullable=self.nullable[columnz]
                      ) for columnz, dtypez in self.dtypes.items()))
-        # if tabletocreate.exists():
-        tabletocreate.create()
+        if not tabletocreate.exists():
+            tabletocreate.create()

@@ -77,19 +77,7 @@ def delete_message(message):
 
 
 def main():
-    con = tableobject.conn
-    dtypes = tableobject.dtypes
-    nullable = tableobject.nullable
-    table = tableobject.table
-
-    # create  empty table if needed, with all columns, autoid, notnull
-    metadata = MetaData(bind=con)
-    createtable = Table(
-        table, metadata,
-        Column('ID', Integer, primary_key=True),
-        *(Column(columnz, dtypez, nullable=nullable[columnz]
-                 ) for columnz, dtypez in dtypes.items()))
-    createtable.create()
+    tableobject.createtable  # inherited from destination
 
     while True:
         # get new queue, for new messages
