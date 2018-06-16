@@ -36,7 +36,7 @@ from . import setup
 
 class SQLite:
     """
-    Default local SQLite database
+    Default local SQLite database.
 
     You can even leverage another metaclass like we do here with
     sqlalchemy.types.
@@ -62,7 +62,8 @@ class SQLite:
     def conn(self):
         """Return a connection string you use like pandas.read_sql_table."""
         self.database = self._conn_data['database']
-        return create_engine(f"sqlite:////{setup.configs['datafolder']}/{self.database}")
+        return create_engine(
+            f"sqlite:////{setup.configs['datafolder']}/{self.database}")
 
     @property
     def dtypes(self):

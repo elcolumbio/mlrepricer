@@ -16,6 +16,10 @@ access_key: None
 secret_key: None
 account_id: None
 
+# default data dump, find it in your root datafolder.
+SQLite:
+    database: 'listenerdb.sqlite'
+
 # your own datadumps, you are completely free to change the attributes
 AzureSQL:
     host: None

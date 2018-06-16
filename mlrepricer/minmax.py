@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import pandas as pd
+from . import setup
 
 datafolder = setup.configs['datafolder']
 filename = 'minmax.csv'

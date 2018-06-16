@@ -14,18 +14,18 @@ import xmltodict
 import time
 import threading
 import pandas as pd
-#import datetime
 
-from . import setup, schemas, example_destination, parser
-from .example_destination import SQLite, AzureSQL
-from sqlalchemy import Table, Column, Integer, MetaData
+from . import setup, schemas, parser
+from .example_destination import SQLite  # AzureSQL or your own
 
 
 yaml = YAML(typ='unsafe')
 yaml.default_flow_style = False
 
-
+# Just replace SQLite with your database class
 tableobject = schemas.pricemonitor(SQLite)()
+
+
 datafolder = f"{setup.configs['datafolder']}sub/"
 region_name = setup.configs['region_name']
 queuename = setup.configs['queuename']
@@ -61,11 +61,12 @@ def dump_message_toyaml(message):
         yaml.dump(r, f)
 
 
-def dump_message_tosqlite(message):
+def dump_message_tosql(message):
     """Dumping the message to a to a SQLite database."""
 
     messageid = message['MessageId']
     r = xmltodict.parse(message['Body'])
+    # here we call the parser.py file •=•
     parsed = pd.DataFrame(parser.main(r))
     parsed.to_sql(tableobject.table, tableobject.conn,
                   if_exists='append', index=False)
@@ -80,6 +81,7 @@ def delete_message(message):
 
 
 def main():
+    """Recieves every 20 seconds a new queue and outputs into a database."""
     tableobject.createtable  # inherited from destination
 
     while True:
@@ -92,7 +94,6 @@ def main():
             if message is None:
                 break
             message = message[0]
-            # replace it with your processing method
-            dump_message_tosqlite(message)
+            dump_message_tosql(message)
             # delete_message(message)
         time.sleep(20)

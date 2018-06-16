@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 
-"""Created on SA 2018.05.12 @author: elcolumbio ."""
+"""
+Created on SA 2018.05.12 @author: elcolumbio .
 
-from ruamel.yaml import YAML
-import os
+We call this quite hidden in listener.py in the dump_message_tosql method.
+Before we used a file dump and parsed afterwards.
+"""
+
 import datetime
-import pandas as pd
 
 from . import setup
 from . import helper
@@ -14,8 +16,8 @@ marketplaceid = helper.MARKETPLACES[setup.configs['region']]
 currencycode = setup.configs['currencycode']
 
 
-def validate_message_content(message):
-    """Validatation."""
+def validate_message_meta(message):
+    """Validatation for data we get per messageid."""
     metadata = message['Notification']['NotificationMetaData']
     payload = message['Notification']['NotificationPayload'][
         'AnyOfferChangedNotification']['OfferChangeTrigger']
@@ -38,8 +40,7 @@ def parse_offers(payload):
     for offer in payload['Offers']['Offer']:
         # attributes per offer
         if isinstance(offer, str):
-            # bad format
-            # print(filename, offer)
+            # print(f'wrong format for one {offer} expected dict got string')
             continue
         assert offer['SubCondition'] == 'new'
         assert offer['ListingPrice']['CurrencyCode'] == currencycode
@@ -78,9 +79,8 @@ def parse_offers(payload):
 
 
 def main(message):
-    print(message)
-    validate_message_content(message)
-
+    """Input is the body of the message parsed by xmltodict, outputs a dataframe"""
+    validate_message_meta(message)
     payload = message['Notification']['NotificationPayload'][
         'AnyOfferChangedNotification']
     return parse_offers(payload)
