@@ -13,6 +13,8 @@ from ruamel.yaml import YAML
 import xmltodict
 import time
 import threading
+import pandas as pd
+#import datetime
 
 from . import setup, schemas, example_destination, parser
 from .example_destination import SQLite, AzureSQL
@@ -23,7 +25,7 @@ yaml = YAML(typ='unsafe')
 yaml.default_flow_style = False
 
 
-tableobject = schemas.pricemonitor(AzureSQL)()
+tableobject = schemas.pricemonitor(SQLite)()
 datafolder = f"{setup.configs['datafolder']}sub/"
 region_name = setup.configs['region_name']
 queuename = setup.configs['queuename']
@@ -64,8 +66,9 @@ def dump_message_tosqlite(message):
 
     messageid = message['MessageId']
     r = xmltodict.parse(message['Body'])
-    parsed = parser.main(r)
-    print(parsed)
+    parsed = pd.DataFrame(parser.main(r))
+    parsed.to_sql(tableobject.table, tableobject.conn,
+                  if_exists='append', index=False)
 
 
 def delete_message(message):

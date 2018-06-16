@@ -61,12 +61,12 @@ class SQLite:
     @property
     def conn(self):
         """Return a connection string you use like pandas.read_sql_table."""
-        return create_engine(f"sqlite:////{setup.configs['datafolder']}")
+        self.database = self._conn_data['database']
+        return create_engine(f"sqlite:////{setup.configs['datafolder']}/{self.database}")
 
     @property
     def dtypes(self):
         """Use for creating tables, you have to implement mappings."""
-        print(self.mapping)
         return dict(zip(self.mapping.keys(), [item[0] for item in list(
             self.mapping.values())]))
 
@@ -92,10 +92,9 @@ class SQLite:
 
 class AzureSQL:
     """
-    For each data destination like MSSQL define your own ParentClass.
+    For each data destination like MSSQL define your own Class.
 
-    You can even leverage another metaclass like we do here with
-    sqlalchemy.types.
+    This is an example for a client server database.
     """
 
     def __init__(self):
