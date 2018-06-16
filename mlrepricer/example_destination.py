@@ -28,8 +28,66 @@ if not createtable.exists():
 
 from sqlalchemy import types
 from sqlalchemy import create_engine
+from sqlalchemy import Table, Column, Integer, MetaData
 
-from .. import setup
+
+from . import setup
+
+
+class SQLite:
+    """
+    Default local SQLite database
+
+    You can even leverage another metaclass like we do here with
+    sqlalchemy.types.
+    """
+
+    def __init__(self):
+        """Map the dtypes of your database to our definitions."""
+        # if you have unicode it's best to use NVARCHAR
+        self._textshort = types.NVARCHAR(length=40)
+        self._textmiddle = types.NVARCHAR(length=400)
+        self._textlong = types.NVARCHAR(length=4000)  # NVARCH4000 is max
+        self._floaty = types.Float
+        self._inty = types.INTEGER
+        self._datey = types.DATE
+        self._datetimey = types.DATETIME
+        self._timey = types.TIME
+        self._booly = types.BINARY
+
+        # Connection data, see the central config.yaml file.
+        self._conn_data = setup.configs['SQLite']
+
+    @property
+    def conn(self):
+        """Return a connection string you use like pandas.read_sql_table."""
+        return create_engine(f"sqlite:////{setup.configs['datafolder']}")
+
+    @property
+    def dtypes(self):
+        """Use for creating tables, you have to implement mappings."""
+        print(self.mapping)
+        return dict(zip(self.mapping.keys(), [item[0] for item in list(
+            self.mapping.values())]))
+
+    @property
+    def nullable(self):
+        """Use for creating tables, you have to implement mappings."""
+        return dict(zip(self.mapping.keys(), [item[1] for item in list(
+            self.mapping.values())]))
+
+    @property
+    def createtable(self):
+        """Create  empty table if needed, with all columns, autoid, notnull."""
+        metadata = MetaData(bind=self.conn)
+
+        tabletocreate = Table(
+            self.table, metadata,
+            Column('ID', Integer, primary_key=True),
+            *(Column(columnz, dtypez, nullable=self.nullable[columnz]
+                     ) for columnz, dtypez in self.dtypes.items()))
+        # if tabletocreate.exists():
+        tabletocreate.create()
 
 
 class AzureSQL:
@@ -54,7 +112,7 @@ class AzureSQL:
         self._booly = types.BINARY
 
         # Connection data, see the central config.yaml file.
-        self._conn_data = setup.static_configs()['AzureSQL']
+        self._conn_data = setup.configs['AzureSQL']
 
     @property
     def conn(self):
@@ -79,3 +137,16 @@ class AzureSQL:
         """Use for creating tables, you have to implement mappings."""
         return dict(zip(self.mapping.keys(), [item[1] for item in list(
             self.mapping.values())]))
+
+    @property
+    def createtable(self):
+        """Create  empty table if needed, with all columns, autoid, notnull."""
+        metadata = MetaData(bind=self.conn)
+
+        tabletocreate = Table(
+            self.table, metadata,
+            Column('ID', Integer, primary_key=True),
+            *(Column(columnz, dtypez, nullable=self.nullable[columnz]
+                     ) for columnz, dtypez in self.dtypes.items()))
+        # if tabletocreate.exists():
+        tabletocreate.create()

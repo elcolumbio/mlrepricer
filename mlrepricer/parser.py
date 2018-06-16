@@ -10,10 +10,6 @@ import pandas as pd
 from . import setup
 from . import helper
 
-yaml = YAML(typ='unsafe')
-yaml.default_flow_style = False
-
-datafolder = f"{setup.configs['datafolder']}sub/"
 marketplaceid = helper.MARKETPLACES[setup.configs['region']]
 currencycode = setup.configs['currencycode']
 
@@ -81,24 +77,13 @@ def parse_offers(payload):
     return resultlist
 
 
-def main():
-    global filename
-    resultlist = []
-    for filename in os.listdir(datafolder):
-        with open(datafolder + filename, 'r') as f:
-            message = yaml.load(f)
-        if message is None or isinstance(message, str):
-            # print(filename, message)
-            continue
-        validate_message_content(message)
+def main(message):
+    print(message)
+    validate_message_content(message)
 
-        payload = message['Notification']['NotificationPayload'][
-            'AnyOfferChangedNotification']
-        newrows = parse_offers(payload)
-        resultlist += newrows
-
-    df = pd.DataFrame(resultlist)
-    helper.dump_dataframe(df, 'alldata')
+    payload = message['Notification']['NotificationPayload'][
+        'AnyOfferChangedNotification']
+    return parse_offers(payload)
 
 
 if __name__ == '__main__':

@@ -14,18 +14,18 @@ def pricemonitor(target):
         @property
         def mapping(self):
             return {
-                'asin': (self.textshort, False),
-                'feedback': (self.inty, False),
-                'feedbackpercent': (self.inty, False),
-                'instock': (self.booly, False),
-                'isbuyboxwinner': (self.booly, False),
-                'isfeaturedmerchant': (self.booly, False),
-                'isprime': (self.booly, False),
-                'price': (self.float, False),
-                'sellerid': (self.textshort, False),
-                'shipping_maxhours': (self.inty, False),
-                'shipping_minhours': (self.inty, False),
-                'time_changed': (self.datey)}
+                'asin': (self._textshort, False),
+                'feedback': (self._inty, False),
+                'feedbackpercent': (self._inty, False),
+                'instock': (self._booly, False),
+                'isbuyboxwinner': (self._booly, False),
+                'isfeaturedmerchant': (self._booly, False),
+                'isprime': (self._booly, False),
+                'price': (self._floaty, False),
+                'sellerid': (self._textshort, False),
+                'shipping_maxhours': (self._inty, False),
+                'shipping_minhours': (self._inty, False),
+                'time_changed': (self._datey, False)}
     return PriceMonitor
 
 
@@ -42,18 +42,18 @@ def pricemonitorrecent(target):
         @property
         def mapping(self):
             return {
-                'asin': (self.textshort, False),
-                'feedback': (self.inty, False),
-                'feedbackpercent': (self.inty, False),
-                'instock': (self.booly, False),
-                'isbuyboxwinner': (self.booly, False),
-                'isfeaturedmerchant': (self.booly, False),
-                'isprime': (self.booly, False),
-                'price': (self.float, False),
-                'sellerid': (self.textshort, False),
-                'shipping_maxhours': (self.inty, False),
-                'shipping_minhours': (self.inty, False),
-                'time_changed': (self.datey)}
+                'asin': (self._textshort, False),
+                'feedback': (self._inty, False),
+                'feedbackpercent': (self._inty, False),
+                'instock': (self._booly, False),
+                'isbuyboxwinner': (self._booly, False),
+                'isfeaturedmerchant': (self._booly, False),
+                'isprime': (self._booly, False),
+                'price': (self._floaty, False),
+                'sellerid': (self._textshort, False),
+                'shipping_maxhours': (self._inty, False),
+                'shipping_minhours': (self._inty, False),
+                'time_changed': (self._datey, False)}
     return PriceMonitorRecent
 
 
@@ -69,7 +69,7 @@ def mapping(target):
         @property
         def mapping(self):
             return {
-                'asin': (self.textshort, False),
-                'seller_sku': (self.textmiddle, False),
-                'isprime': (self.booly, False)}
+                'asin': (self._textshort, False),
+                'seller_sku': (self._textmiddle, False),
+                'isprime': (self._booly, False)}
     return Mapping

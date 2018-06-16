@@ -14,12 +14,16 @@ import xmltodict
 import time
 import threading
 
-from . import setup
+from . import setup, schemas, example_destination, parser
+from .example_destination import SQLite, AzureSQL
+from sqlalchemy import Table, Column, Integer, MetaData
+
 
 yaml = YAML(typ='unsafe')
 yaml.default_flow_style = False
 
 
+tableobject = schemas.pricemonitor(AzureSQL)()
 datafolder = f"{setup.configs['datafolder']}sub/"
 region_name = setup.configs['region_name']
 queuename = setup.configs['queuename']
@@ -47,12 +51,21 @@ def receive_message():
         WaitTimeSeconds=0)
 
 
-def dump_message(message):
-    """Just an example of dumping the response."""
+def dump_message_toyaml(message):
+    """Dumping the message to a yaml file its fine for up to a few thousand."""
     messageid = message['MessageId']
     r = xmltodict.parse(message['Body'])
     with open(f'{datafolder}{messageid}.yaml', 'w') as f:
         yaml.dump(r, f)
+
+
+def dump_message_tosqlite(message):
+    """Dumping the message to a to a SQLite database."""
+
+    messageid = message['MessageId']
+    r = xmltodict.parse(message['Body'])
+    parsed = parser.main(r)
+    print(parsed)
 
 
 def delete_message(message):
@@ -64,6 +77,20 @@ def delete_message(message):
 
 
 def main():
+    con = tableobject.conn
+    dtypes = tableobject.dtypes
+    nullable = tableobject.nullable
+    table = tableobject.table
+
+    # create  empty table if needed, with all columns, autoid, notnull
+    metadata = MetaData(bind=con)
+    createtable = Table(
+        table, metadata,
+        Column('ID', Integer, primary_key=True),
+        *(Column(columnz, dtypez, nullable=nullable[columnz]
+                 ) for columnz, dtypez in dtypes.items()))
+    createtable.create()
+
     while True:
         # get new queue, for new messages
         queue = sqsres.get_queue_by_name(QueueName=queuename)
@@ -75,6 +102,6 @@ def main():
                 break
             message = message[0]
             # replace it with your processing method
-            dump_message(message)
-            delete_message(message)
+            dump_message_tosqlite(message)
+            # delete_message(message)
         time.sleep(20)
