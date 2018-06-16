@@ -3,6 +3,8 @@
 It's just being at the very start, we put things together.
 At the end of June 2018 we want have a beta version.
 
+# Right now best if you contact me. This guide outdates to fast :)
+
 We provide you some modules you can use in your existing infrastructure.
 It should be very easy to do so.
 To support this we also have schema validations.
