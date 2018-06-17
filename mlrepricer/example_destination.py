@@ -49,11 +49,12 @@ class SQLite:
         self._textmiddle = types.NVARCHAR(length=400)
         self._textlong = types.NVARCHAR(length=4000)  # NVARCH4000 is max
         self._floaty = types.Float
+        self._numericy = types.DECIMAL(10, 2)
         self._inty = types.INTEGER
         self._datey = types.DATE
         self._datetimey = types.DATETIME
         self._timey = types.TIME
-        self._booly = types.BINARY
+        self._booly = types.BOOLEAN
 
         # Connection data, see the central config.yaml file.
         self._conn_data = setup.configs['SQLite']
@@ -109,7 +110,7 @@ class AzureSQL:
         self._datey = types.DATE
         self._datetimey = types.DATETIME
         self._timey = types.TIME
-        self._booly = types.BINARY
+        self._booly = types.BOOLEAN
 
         # Connection data, see the central config.yaml file.
         self._conn_data = setup.configs['AzureSQL']

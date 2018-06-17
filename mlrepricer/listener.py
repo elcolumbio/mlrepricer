@@ -36,10 +36,11 @@ queue = sqsres.get_queue_by_name(QueueName=queuename)
 
 
 class Listener (threading.Thread):
+    """Demon Thread read data from aws queue and dump in SQLite."""
+
     def run(self):
         print(f'Starting {self.name}')
         main()
-        print(f'Exiting {self.name}')
 
 
 def receive_message():
@@ -64,11 +65,18 @@ def dump_message_toyaml(message):
 def dump_message_tosql(message):
     """Dumping the message to a to a SQLite database."""
 
-    messageid = message['MessageId']
     r = xmltodict.parse(message['Body'])
     # here we call the parser.py file •=•
     parsed = pd.DataFrame(parser.main(r))
     parsed.to_sql(tableobject.table, tableobject.conn,
+                  dtype=tableobject.dtypes,
+                  if_exists='append', index=False)
+
+
+def dump_helper(message):
+    parsed = pd.DataFrame(parser.main(message))
+    parsed.to_sql(tableobject.table, tableobject.conn,
+                  dtype=tableobject.dtypes,
                   if_exists='append', index=False)
 
 
@@ -95,5 +103,5 @@ def main():
                 break
             message = message[0]
             dump_message_tosql(message)
-            # delete_message(message)
+            delete_message(message)
         time.sleep(20)

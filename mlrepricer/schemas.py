@@ -21,7 +21,7 @@ def pricemonitor(target):
                 'isbuyboxwinner': (self._booly, False),
                 'isfeaturedmerchant': (self._booly, False),
                 'isprime': (self._booly, False),
-                'price': (self._floaty, False),
+                'price': (self._numericy, False),
                 'sellerid': (self._textshort, False),
                 'shipping_maxhours': (self._inty, False),
                 'shipping_minhours': (self._inty, False),

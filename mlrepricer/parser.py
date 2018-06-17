@@ -79,7 +79,7 @@ def parse_offers(payload):
 
 
 def main(message):
-    """Input is the body of the message parsed by xmltodict, outputs a dataframe"""
+    """Input is the message body parsed by xmltodict, outputs a dataframe"""
     validate_message_meta(message)
     payload = message['Notification']['NotificationPayload'][
         'AnyOfferChangedNotification']
