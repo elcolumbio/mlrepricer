@@ -45,6 +45,8 @@ class SQLite:
     def __init__(self):
         """Map the dtypes of your database to our definitions."""
         # if you have unicode it's best to use NVARCHAR
+        self._asin = types.NVARCHAR(length=9)
+        self._sellerid = types.NVARCHAR(length=14)
         self._textshort = types.NVARCHAR(length=40)
         self._textmiddle = types.NVARCHAR(length=400)
         self._textlong = types.NVARCHAR(length=4000)  # NVARCH4000 is max
