@@ -11,7 +11,9 @@ import numpy as np
 from . import helper
 
 
-class Mapping(threading.Thread):
+class Match(threading.Thread):
+    """Run once a day to match our asins to skus."""
+
     def run(self):
         print(f'Starting {self.name}')
         report = get_report(ReportType.ACTIVE_LISTINGS.value)

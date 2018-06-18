@@ -46,7 +46,7 @@ def auto_get_report_id(request, rec_level=0):
     report_api = mws.apis.Reports(**mwscred)
     request_id = request.parsed.ReportRequestInfo.ReportRequestId
 
-    sleep(120)
+    sleep(60)
     statusdict = report_api.get_report_request_list(request_ids=request_id).parsed
     status = statusdict.ReportRequestInfo.ReportProcessingStatus
 

@@ -39,7 +39,7 @@ class Listener (threading.Thread):
     """Demon Thread read data from aws queue and dump in SQLite."""
 
     def run(self):
-        """This thread should only run once."""
+        """Thread should run once."""
         print(f'Starting {self.name}')
         main()
 
@@ -78,6 +78,7 @@ def delete_message(d):
         for idx, receipt_handle in enumerate(batch):
             entries.append({'Id': str(idx), 'ReceiptHandle': receipt_handle})
         sqs.delete_message_batch(QueueUrl=queue.url, Entries=entries)
+        # we could test here if we fail, but sqs says anyway you can't rely
 
 
 def main():
