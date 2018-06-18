@@ -38,7 +38,6 @@ def parse_offers(payload):
         "%Y-%m-%dT%H:%M:%S.%fZ")
 
     for offer in payload['Offers']['Offer']:
-        # attributes per offer
         if isinstance(offer, str):
             # print(f'wrong format for one {offer} expected dict got string')
             continue

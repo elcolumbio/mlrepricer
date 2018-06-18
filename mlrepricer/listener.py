@@ -83,9 +83,7 @@ def dump_helper(message):
 def delete_message(message):
     """Delete the one actual message we were processing."""
     receipt_handle = message['ReceiptHandle']
-    sqs.delete_message(
-        QueueUrl=queue.url,
-        ReceiptHandle=receipt_handle)
+    sqs.delete_message(QueueUrl=queue.url, ReceiptHandle=receipt_handle)
 
 
 def main():

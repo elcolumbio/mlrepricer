@@ -1,6 +1,6 @@
 # -*- coding: utf-8 - *-
 """
-Abstracts your target from your tabel definitions target and you can use it.
+Abstracts your target from your table definitions target and you can use it.
 
 Example how you inherit from it.
 def saletaxdoo(target):
