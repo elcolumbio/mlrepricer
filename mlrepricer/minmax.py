@@ -10,15 +10,15 @@ filename = 'minmax.csv'
 
 def load_csv():
     """We should reprice only skus with min max prices."""
-    pd.read_csv('minmax.csv')
+    return pd.read_csv(datafolder+filename)
 
 
 def dump_csv():
-    """Present empty values first."""
+    """Merge old and new, then present empty values first."""
     df = helper.load_dataframe('mapping')
     df['minPrice'] = None
     df['maxPrice'] = None
-    dfold = pd.read_csv('minmax.csv')
-    merged = dfold.append(df, ignore_index=True).groupby(
+    dfold = load_csv()
+    merged = dfold.append(df, ignore_index=True, sort=True).groupby(
         'seller_sku').max().sort_values('maxPrice', na_position='first')
-    merged.to_csv('minmax.csv', index=False)
+    merged.to_csv(datafolder+filename)
