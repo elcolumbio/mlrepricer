@@ -11,9 +11,9 @@ Besides that we use it for readability.
 import boto3
 from ruamel.yaml import YAML
 import xmltodict
-import time
 import threading
 import pandas as pd
+import time
 
 from . import setup, schemas, parser
 from .example_destination import SQLite  # AzureSQL or your own
@@ -51,7 +51,7 @@ def receive_message():
         AttributeNames=['SentTimestamp'],
         MaxNumberOfMessages=1,
         MessageAttributeNames=['All'],
-        VisibilityTimeout=0,
+        VisibilityTimeout=600,  # so long we have one thread it's ok
         WaitTimeSeconds=0)
 
 
@@ -70,10 +70,14 @@ def parse(message):
     return pd.DataFrame(parser.main(r))
 
 
-def delete_message(deletelist):
-    """Delete the one actual message we were processing."""
-    for receipt_handle in deletelist:
-        sqs.delete_message(QueueUrl=queue.url, ReceiptHandle=receipt_handle)
+def delete_message(d):
+    """Delete the messages we have processed."""
+    d = [d[i:i + 10] for i in range(0, len(d), 10)]  # 10 is max batchsize
+    for batch in d:
+        entries = []
+        for idx, receipt_handle in enumerate(batch):
+            entries.append({'Id': str(idx), 'ReceiptHandle': receipt_handle})
+        sqs.delete_message_batch(QueueUrl=queue.url, Entries=entries)
 
 
 def main():
@@ -90,11 +94,10 @@ def main():
         print(numbermessages)
         for _ in range(numbermessages):
             message = receive_message().get('Messages', None)
-            if message is None:
-                break
-            message = message[0]
-            messagedf.append(parse(message))
-            deletelist.append(message['ReceiptHandle'])
+            if message is not None:
+                message = message[0]
+                messagedf = messagedf.append(parse(message))
+                deletelist.append(message['ReceiptHandle'])
 
         messagedf.to_sql(tableobject.table, tableobject.conn,
                          dtype=tableobject.dtypes,
