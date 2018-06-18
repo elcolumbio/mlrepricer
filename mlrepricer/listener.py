@@ -39,6 +39,7 @@ class Listener (threading.Thread):
     """Demon Thread read data from aws queue and dump in SQLite."""
 
     def run(self):
+        """This thread should only run once."""
         print(f'Starting {self.name}')
         main()
 
@@ -55,35 +56,24 @@ def receive_message():
 
 
 def dump_message_toyaml(message):
-    """Dumping the message to a yaml file its fine for up to a few thousand."""
+    """Dump the message to a yaml file its fine for up to a few thousand."""
     messageid = message['MessageId']
     r = xmltodict.parse(message['Body'])
     with open(f'{datafolder}{messageid}.yaml', 'w') as f:
         yaml.dump(r, f)
 
 
-def dump_message_tosql(message):
-    """Dumping the message to a to a SQLite database."""
-
+def parse(message):
+    """Parse the message and return a pandas dataframe."""
     r = xmltodict.parse(message['Body'])
     # here we call the parser.py file •=•
-    parsed = pd.DataFrame(parser.main(r))
-    parsed.to_sql(tableobject.table, tableobject.conn,
-                  dtype=tableobject.dtypes,
-                  if_exists='append', index=False)
+    return pd.DataFrame(parser.main(r))
 
 
-def dump_helper(message):
-    parsed = pd.DataFrame(parser.main(message))
-    parsed.to_sql(tableobject.table, tableobject.conn,
-                  dtype=tableobject.dtypes,
-                  if_exists='append', index=False)
-
-
-def delete_message(message):
+def delete_message(deletelist):
     """Delete the one actual message we were processing."""
-    receipt_handle = message['ReceiptHandle']
-    sqs.delete_message(QueueUrl=queue.url, ReceiptHandle=receipt_handle)
+    for receipt_handle in deletelist:
+        sqs.delete_message(QueueUrl=queue.url, ReceiptHandle=receipt_handle)
 
 
 def main():
@@ -91,6 +81,9 @@ def main():
     tableobject.createtable  # inherited from destination
 
     while True:
+        messagedf = pd.DataFrame()
+        deletelist = []
+
         # get new queue, for new messages
         queue = sqsres.get_queue_by_name(QueueName=queuename)
         numbermessages = int(queue.attributes['ApproximateNumberOfMessages'])
@@ -100,6 +93,11 @@ def main():
             if message is None:
                 break
             message = message[0]
-            dump_message_tosql(message)
-            delete_message(message)
+            messagedf.append(parse(message))
+            deletelist.append(message['ReceiptHandle'])
+
+        messagedf.to_sql(tableobject.table, tableobject.conn,
+                         dtype=tableobject.dtypes,
+                         if_exists='append', index=False)
+        delete_message(deletelist)
         time.sleep(20)

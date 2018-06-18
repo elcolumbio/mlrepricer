@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
+"""Each table we define here, you can reuse them for all different dbs."""
 
 
 def pricemonitor(target):
+    """Wrapp the class for dinamic inheritance."""
     class PriceMonitor(target):
         """Every table inherits from the Destination class."""
 
@@ -30,6 +32,7 @@ def pricemonitor(target):
 
 
 def pricemonitorrecent(target):
+    """Wrapp the class for dinamic inheritance."""
     class PriceMonitorRecent(target):
         """Every table inherits from the Destination class."""
 
@@ -58,6 +61,7 @@ def pricemonitorrecent(target):
 
 
 def mapping(target):
+    """Wrapp the class for dinamic inheritance."""
     class Mapping(target):
         """Every table inherits from the Destination class."""
 

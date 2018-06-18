@@ -14,16 +14,6 @@ def saletaxdoo(target):
             return {'transaction_start_date': (self._datey, False)}
 
 tableobject = saletaxdoo(AzureSQL)()  # AzureSQL is defined in this module
-
-# create  empty table if needed, with all columns, autoid, notnull
-metadata = MetaData(bind=tableobject.conn)
-createtable = Table(
-    tableobject.table, metadata,
-    Column('ID', Integer, primary_key=True),
-    *(Column(columnz, dtypez, nullable=nself.tableobject.nullable[columnz]
-             ) for columnz, dtypez in tableobject.dtypes.items()))
-if not createtable.exists():
-    createtable.create()
 """
 
 from sqlalchemy import types
