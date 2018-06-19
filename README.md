@@ -2,7 +2,16 @@
 
 It's just being at the very start, we put things together.
 At the end of June 2018 we want have a beta version.
-Maybe this ressource is helpful. https://github.com/LantaoYu/MARL-Papers
+
+Should we solve it as an Multi Agent Problem?
+Maybe it's over the top and the problem is simpler and quite static?
+
+Some ressources about Multi Agent learning:
+https://github.com/LantaoYu/MARL-Papers
+https://www.youtube.com/watch?v=yE62Zwhmzi8
+https://www.youtube.com/watch?v=bjjoHji8KUQ
+
+It's quite interesting, will have a look anyway.
 
 # Right now best if you contact me. This guide outdates to fast :)
 
