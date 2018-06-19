@@ -2,6 +2,7 @@
 
 It's just being at the very start, we put things together.
 At the end of June 2018 we want have a beta version.
+Maybe this ressource is helpful. https://github.com/LantaoYu/MARL-Papers
 
 # Right now best if you contact me. This guide outdates to fast :)
 
