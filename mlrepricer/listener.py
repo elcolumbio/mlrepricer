@@ -14,6 +14,7 @@ import xmltodict
 import threading
 import pandas as pd
 import time
+import datetime
 
 from . import setup, schemas, parser
 from .example_destination import SQLite  # AzureSQL or your own
@@ -104,4 +105,33 @@ def main():
                          dtype=tableobject.dtypes,
                          if_exists='append', index=False)
         delete_message(deletelist)
+        time.sleep(20)
+
+
+def redis_main():
+    """This is on the todo list."""
+    import redis
+    redis_host = "localhost"
+    redis_port = 6379
+    redis_password = None
+    r = redis.StrictRedis(host=redis_host, port=redis_port,
+                          password=redis_password, decode_responses=True)
+    while True:
+        queue = sqsres.get_queue_by_name(QueueName=queuename)
+        numbermessages = int(queue.attributes['ApproximateNumberOfMessages'])
+        print(numbermessages)
+        for _ in range(numbermessages):
+            message = receive_message().get('Messages', None)
+            if message is None:
+                break
+            message = message[0]['Body']
+            mparsed = xmltodict.parse(message)['Notification'][
+                'NotificationPayload']['AnyOfferChangedNotification']
+            asin = mparsed['OfferChangeTrigger']['ASIN']
+            score = datetime.datetime.strptime(
+                mparsed['OfferChangeTrigger']['TimeOfOfferChange'],
+                "%Y-%m-%dT%H:%M:%S.%fZ").timestamp()
+            r.zadd(asin, float(score), str(message))
+            r.sadd('updated_asins', asin)
+            # delete_message(message)
         time.sleep(20)
