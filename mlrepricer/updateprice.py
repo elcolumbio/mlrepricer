@@ -2,8 +2,9 @@
 """Pushing new prices to amazon with the mws python api."""
 import redis
 import xmltodict
-from mlrepricer import parser, helper, setup
+from mlrepricer import parser, helper, setup, minmax
 import mws
+import threading
 
 mwsid = helper.mwscred['account_id']
 
@@ -13,7 +14,16 @@ else:
     decimal = '.'
 
 r = redis.StrictRedis(helper.rediscred, decode_responses=True)
-mapping = helper.load_dataframe('mapping')
+mapping = minmax.load_csv()
+
+
+class Updater(threading.Thread):
+    """Demon Thread push new price data to your mws seller account."""
+
+    def run(self):
+        """Thread should run once."""
+        print(f'Starting {self.name}')
+        main()
 
 
 def get_latest_message(asin):
@@ -77,12 +87,13 @@ def create_feed(products_to_update):
     return feed_data.encode('utf8')
 
 
-products_to_update = []
-for asin in r.smembers('updated_asins'):
-    winner = get_buyboxwinners(get_latest_message(asin))
-    sku = get_sku(asin)
-    products_to_update.append(matchprice(sku, winner))
+def main():
+    products_to_update = []
+    for asin in r.smembers('updated_asins'):
+        winner = get_buyboxwinners(get_latest_message(asin))
+        sku = get_sku(asin)
+        products_to_update.append(matchprice(sku, winner))
 
-feed_data = create_feed(products_to_update)
-feeds_api = mws.Feeds(**helper.mwscred)
-result = feeds_api.submit_feed(feed_data, '_POST_FLAT_FILE_INVLOADER_DATA_')
+    feed_data = create_feed(products_to_update)
+    feeds_api = mws.Feeds(**helper.mwscred)
+    return feeds_api.submit_feed(feed_data, '_POST_FLAT_FILE_INVLOADER_DATA_')
