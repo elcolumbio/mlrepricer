@@ -44,7 +44,7 @@ class Listener (threading.Thread):
     def run(self):
         """Thread should run once."""
         print(f'Starting {self.name}')
-        main()
+        redis_main()
 
 
 def receive_message():
@@ -110,8 +110,20 @@ def main():
         time.sleep(20)
 
 
+def quickparse_message(message):
+    """We have to preparse it to get the timestamp and asin."""
+    message = message[0]['Body']
+    mparsed = xmltodict.parse(message)['Notification'][
+        'NotificationPayload']['AnyOfferChangedNotification']
+    asin = mparsed['OfferChangeTrigger']['ASIN']
+    score = datetime.datetime.strptime(
+        mparsed['OfferChangeTrigger']['TimeOfOfferChange'],
+        "%Y-%m-%dT%H:%M:%S.%fZ").timestamp()
+    return asin, score
+
+
 def redis_main():
-    """This is on the todo list."""
+    """Recieves every 20 seconds a new queue and outputs into a redis."""
     r = redis.StrictRedis(**helper.rediscred, decode_responses=True)
     while True:
         queue = sqsres.get_queue_by_name(QueueName=queuename)
@@ -121,13 +133,7 @@ def redis_main():
             message = receive_message().get('Messages', None)
             if message is None:
                 break
-            message = message[0]['Body']
-            mparsed = xmltodict.parse(message)['Notification'][
-                'NotificationPayload']['AnyOfferChangedNotification']
-            asin = mparsed['OfferChangeTrigger']['ASIN']
-            score = datetime.datetime.strptime(
-                mparsed['OfferChangeTrigger']['TimeOfOfferChange'],
-                "%Y-%m-%dT%H:%M:%S.%fZ").timestamp()
+            asin, score = quickparse_message(message)
             r.zadd(asin, float(score), str(message))
             r.sadd('updated_asins', asin)
             # delete_message(message)

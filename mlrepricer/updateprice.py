@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
 """Pushing new prices to amazon with the mws python api."""
+import time
 import redis
 import xmltodict
 from mlrepricer import parser, helper, setup, minmax
 import mws
 import threading
+from ruamel.yaml import YAML
 
+yaml = YAML()
 mwsid = helper.mwscred['account_id']
 
 if setup.configs['region'] in ['IT', 'FR', 'ES', 'DE']:
@@ -27,13 +30,17 @@ class Updater(threading.Thread):
 
 
 def get_latest_message(asin):
-    """Leverage the structure of redis zsets sorted sets with score."""
+    """
+    Leverage the structure of redis zsets, sorted sets with score.
+
+    Return the parsed and flattend message.
+    """
     m = r.zrevrangebyscore(asin, 'inf', '-inf', start=0, num=1,
                            withscores=True)
     return parser.main(xmltodict.parse(m[0][0]))
 
 
-def get_buyboxwinners(parsedxml):
+def get_buyboxwinner(parsedxml):
     """
     Return one or multiple winner for prime and not prime offers.
 
@@ -60,6 +67,7 @@ def get_sku(asin):
 
 
 def matchprice(sku, winner):
+    """Primitive repricing rule."""
     for x, y in zip(sku, winner):
         if x and y:  # When the buybox is the same type as our listing
             sellersku = x[0]
@@ -68,19 +76,15 @@ def matchprice(sku, winner):
             return sellersku, buyboxprice
 
 
-def make_feed_row(feed_row_template, product):
-    return feed_row_template.format(product[0],
-                                    str(product[1]).replace('.', decimal))
-
-
 def create_feed(products_to_update):
+    """Process a tsv file for the mws feeds api."""
     feed_header = 'sku\tprice\n'
-    feed_row_template = '{}\t{}'
     feed_row_list = []
 
     for product in products_to_update:
         if product is not None:
-            feed_row = make_feed_row(feed_row_template, product)
+            # the feedrow format: sku\tprice
+            feed_row = f"{product[0]}\t{str(product[1]).replace('.', decimal)}"
             feed_row_list.append(feed_row)
 
     feed_data = feed_header + '\n'.join(feed_row_list)
@@ -88,12 +92,25 @@ def create_feed(products_to_update):
 
 
 def main():
-    products_to_update = []
-    for asin in r.smembers('updated_asins'):
-        winner = get_buyboxwinners(get_latest_message(asin))
-        sku = get_sku(asin)
-        products_to_update.append(matchprice(sku, winner))
+    """Pop the list of changed asins and take action on them."""
+    starttime = time.time()
+    while True:
+        products_to_update = []
+        for asin in r.smembers('updated_asins'):
+            r.srem(asin)  # that should be ok compared to other options
+            m = get_latest_message(asin)
+            time_changed = m['time_changed']
+            winner = get_buyboxwinner(m)
+            skutuple = get_sku(asin)
+            sku, buyboxprice = matchprice(skutuple, winner)
+            products_to_update.append(sku, buyboxprice)
+            # we store the action in redis
+            r.sadd(
+                'actions', yaml.dump([time_changed, asin, sku, buyboxprice]))
 
-    feed_data = create_feed(products_to_update)
-    feeds_api = mws.Feeds(**helper.mwscred)
-    return feeds_api.submit_feed(feed_data, '_POST_FLAT_FILE_INVLOADER_DATA_')
+        feed_data = create_feed(products_to_update)
+        feeds_api = mws.Feeds(**helper.mwscred)
+        return feeds_api.submit_feed(
+            feed_data, '_POST_FLAT_FILE_INVLOADER_DATA_')
+        # We send maximum every 30 seconds a new feed to the mws api.
+        time.sleep(30.0 - ((time.time() - starttime) % 30.0))

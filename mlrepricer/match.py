@@ -28,7 +28,6 @@ def get_report(report_name):
     report_id = helper.auto_get_report_id(request_response)
     if report_id:
         report = report_api.get_report(report_id).parsed
-    # the result is a correct decoded string
     return report
 
 
@@ -38,19 +37,17 @@ def match(report):
                     thousands=None, dayfirst=True)
     i = i[i.loc[:, 'item-condition'] == 11]
     d = i.loc[:, ['seller-sku', 'asin1', 'fulfillment-channel']]
-    d['count'] = 1
+    d['county'] = 1
     listingperasin = d.groupby(['asin1', 'fulfillment-channel']).agg(
-        {'seller-sku': 'first', 'count': 'count'})
+        {'seller-sku': 'first', 'county': 'count'})
 
     # we ignore duplicates in our matching table
-    duplicates = listingperasin[listingperasin.loc[:, 'count'] > 1]
+    duplicates = listingperasin[listingperasin.loc[:, 'county'] > 1]
     if len(duplicates) >= 1:
         print(f'you may want to delete one listing per asin {duplicates}')
 
     # those we return
-    nocollusion = listingperasin[listingperasin.loc[:, 'count'] == 1]
-    nocollusion.reset_index(level=['asin1'], inplace=True)
-    nocollusion.reset_index(level=['fulfillment-channel'], inplace=True)
+    nocollusion = listingperasin[listingperasin.county == 1].reset_index()
 
     # we do some final cleanup and reorganize columns
     # When fulfillment-channel is DEFAULT its seller fulfilled

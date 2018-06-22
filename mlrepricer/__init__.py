@@ -11,11 +11,11 @@ def runlistener():
     return Listener()
 
 
-def match():
+def runmatch():
     """Match your skus to asins isprime combinations."""
     return Match()
 
 
-def updateprices():
+def runupdater():
     """Run the demon to push price changes to your mws seller account."""
     return Updater()

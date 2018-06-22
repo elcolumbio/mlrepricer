@@ -12,7 +12,7 @@ path_to_config = f'{homedir}/mlrepricer_configs.yaml'  # '/home/jeff/'
 if path_to_config is None:
     raise ValueError('path_to_config canot be empty')
 
-yaml = YAML(typ='unsafe')
+yaml = YAML()
 yaml.default_flow_style = False
 
 with open(path_to_config, 'r') as f:
