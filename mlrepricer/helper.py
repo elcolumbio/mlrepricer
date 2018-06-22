@@ -9,6 +9,11 @@ from . import setup
 
 datafolder = setup.configs['datafolder']
 
+rediscred = {
+    'host': setup.configs['Redis']['host'],
+    'port': setup.configs['Redis']['port'],
+    'password': setup.configs['Redis']['password']}
+
 mwscred = {
     'access_key': setup.configs['access_key'],
     'secret_key': setup.configs['secret_key'],
@@ -77,7 +82,8 @@ def auto_get_report_id(request, rec_level=0):
     request_id = request.parsed.ReportRequestInfo.ReportRequestId
 
     sleep(60)
-    statusdict = report_api.get_report_request_list(request_ids=request_id).parsed
+    statusdict = report_api.get_report_request_list(
+        request_ids=request_id).parsed
     status = statusdict.ReportRequestInfo.ReportProcessingStatus
 
     if rec_level > 2:
@@ -92,4 +98,5 @@ def auto_get_report_id(request, rec_level=0):
     elif status == '_DONE_NO_DATA_':
         return ''
     else:
-        raise ValueError('your reportrequestid is screwed: {}'.format(statusdict))
+        raise ValueError('your reportrequestid is screwed: {}'.format(
+            statusdict))

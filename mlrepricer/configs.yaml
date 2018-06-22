@@ -8,7 +8,6 @@ queuename: None  # 'mwslisten'
 
 # parser, your mws credentials
 region: None  # one of: CA, US, DE, ES, FR, IN, IT, UK, JP, CN, MX
-ownsellerid: None
 currencycode: None  # 'EUR'
 
 # update prices, your mws credentials
@@ -16,7 +15,13 @@ access_key: None
 secret_key: None
 account_id: None
 
-# default data dump, find it in your root datafolder.
+# redis data dump
+Redis:
+    host: localhost
+    port: 6379
+    password: None
+
+# local SQLite data dump, find it in your root datafolder.
 SQLite:
     database: 'listenerdb.sqlite'
 
