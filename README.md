@@ -27,7 +27,7 @@ The linear regression for nonprime and prime listings, we can find.
 
 
 # I think every amazon merchant should do some statistical analysis.
-If you know some python, we should help them.
+If you know some python, we should help you.
 
 # Where are we going?
 There won't be a service ever. You can see that by how flexible we build it, for datastorage, modularity.
