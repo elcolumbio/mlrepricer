@@ -1,9 +1,10 @@
 # mlrepricer
 
-It's just being at the very start, we put things together.
-At the end of June 2018 we want have a beta version.
+Everyone is welcome to contribute.
+There are lots of improvements needed.
 
-Should we solve it as an Multi Agent Problem?
+
+One perspective is from a Multi Agent Problem.
 Maybe it's over the top and the problem is simpler and quite static?
 
 Some ressources about Multi Agent learning:
@@ -11,19 +12,19 @@ https://github.com/LantaoYu/MARL-Papers
 https://www.youtube.com/watch?v=yE62Zwhmzi8
 https://www.youtube.com/watch?v=bjjoHji8KUQ
 
-It's quite interesting, will have a look anyway.
-
-# Right now best if you contact me. This guide outdates to fast :)
 
 We provide you some modules you can use in your existing infrastructure.
 It should be very easy to do so.
-To support this we also have schema validations.
+
+Lately we switched to redis.
+We still have schema validations for sql, need some work to integrate the missing parts.
 
 This is not a repricer. It should be used for statistical and ml analysis of your data.
 It would be nice if we share statistic analysis and discuss them and validate them.
-The data on it's own is not valueable. Still i think we shouldn't share it.
-# But let's share models and the analysis itself
-I already started to look at the linear regression for nonprime and prime listings.
+The data on it's own is not valueable.
+
+The linear regression for nonprime and prime listings, we can find.
+
 
 # I think every amazon merchant should do some statistical analysis.
 If you know some python, we should help them.
@@ -59,21 +60,12 @@ boto3
 ruamel
 xmltodict
 pandas
+ruamel
+redis
+numpy
+jupyterlab
 
-## Data structure
-Define a datafolder.
-- datafolder/
-    - sub/    <- here we put all messages as single files, so we can rebuild our features.
-    - alldata    <- this is the msgpack datafram we work with, it's cleaned and ready to use for training.
-    
- it's a lot of data we might do this more clever. Right now it seems to work, it should not take too much space.
- 7.011 items, totalling 46,5 MB
-
-## Questions to ask
-Should we start with continously evaluating the outcome?
-If yes we have to build all the basic parts first.
-
-So what type of problem we want to solve?
+and others for prediction
 
 ## How to get started?
 For more uptodate guides please check out the notebooks.
@@ -86,7 +78,7 @@ aws_access_key_id = YOUR_ACCESS_KEY
 aws_secret_access_key = YOUR_SECRET_KEY
 ```
 
-We define all configs in a yaml file.
+We define all configs in a yaml file, if you fill out everything you are fine.
 So copy mlrepricer/mlrepricer/configs.yaml to the default location ~/.config/mlrepricer/configs.yaml .
 Or change the path_to_config in the setup package.
 
@@ -95,21 +87,4 @@ You can clone it locally and cd into the top level folder.
 and install it with: pip install .
 
 ## Usage
-this shoud work right now:
-```python
-from mlrepricer import helper
-from mlrepricer import listener, parser
-
-listener.main()  # will pull and delete messages from sqs forever
-
-helper.load_dataframe()  # returns the cleaned dataframe
-```
-
-## Objectives:
-- get data
-- dump all data in historic archive [  ]
-- simple method match cheapest price [ ]
-- use https://github.com/python-amazon-mws/python-amazon-mws to set new prices [ ]
-- use different approaches for modelling [ ]
-
-- nice visualizations with altair to get some insights [ ]
+See the notebooks. Download this repo and unpack it, or render them in github.
