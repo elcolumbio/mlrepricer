@@ -105,6 +105,7 @@ def main():
             sku, buyboxprice = matchprice(skutuple, winner)
             products_to_update.append(sku, buyboxprice)
             # we store the action in redis
+            # need to find better structure for easy access TODO
             r.sadd(
                 'actions', yaml.dump([time_changed, asin, sku, buyboxprice]))
 

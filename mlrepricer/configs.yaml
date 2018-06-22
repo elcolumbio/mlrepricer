@@ -2,7 +2,7 @@
 # path_to_config = f'{homedir}/.config/mlrepricer/configs.yaml
 
 # listener, your aws data
-datafolder: '/home/flo/Nextcloud/data/mws/sub'  # '/home/jeff/Nextcloud/data/mws/sub'
+datafolder: None  # '/home/jeff/Nextcloud/data/mws/sub'
 region_name: None  # 'eu-central-1'
 queuename: None  # 'mwslisten'
 
@@ -21,6 +21,7 @@ Redis:
     port: 6379
     password: None
 
+##### Below are optional or outdated
 # local SQLite data dump, find it in your root datafolder.
 SQLite:
     database: 'listenerdb.sqlite'

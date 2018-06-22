@@ -19,3 +19,8 @@ def runmatch():
 def runupdater():
     """Run the demon to push price changes to your mws seller account."""
     return Updater()
+
+
+def runminmax():
+    """Still find out what is the best functionality."""
+    pass
