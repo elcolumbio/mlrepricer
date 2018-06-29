@@ -10,11 +10,7 @@ from ruamel.yaml import YAML
 
 yaml = YAML()
 mwsid = helper.mwscred['account_id']
-
-if setup.configs['region'] in ['IT', 'FR', 'ES', 'DE']:
-    decimal = ','
-else:
-    decimal = '.'
+decimal = setup.decimal
 
 r = redis.StrictRedis(helper.rediscred, decode_responses=True)
 mapping = minmax.load_csv()

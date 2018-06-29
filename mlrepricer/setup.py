@@ -17,3 +17,9 @@ yaml.default_flow_style = False
 
 with open(path_to_config, 'r') as f:
     configs = yaml.load(f)
+
+
+if configs['region'] in ['IT', 'FR', 'ES', 'DE']:
+    decimal = ','
+else:
+    decimal = '.'
