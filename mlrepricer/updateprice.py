@@ -72,6 +72,10 @@ def matchprice(sku, winner):
             return sellersku, buyboxprice
 
 
+def boundaries(sku, buyboxprice):
+    df = minmax.load_csv()
+
+
 def create_feed(products_to_update):
     """Process a tsv file for the mws feeds api."""
     feed_header = 'sku\tprice\n'

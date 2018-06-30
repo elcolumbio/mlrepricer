@@ -11,8 +11,11 @@ datafolder = setup.configs['datafolder']
 
 rediscred = {
     'host': setup.configs['Redis']['host'],
-    'port': setup.configs['Redis']['port'],
-    'password': setup.configs['Redis']['password']}
+    'port': setup.configs['Redis']['port']}
+redispw = setup.configs['Redis']['password']
+if redispw is not None:
+    print(redispw)
+    rediscred.update({'password': redispw})
 
 mwscred = {
     'access_key': setup.configs['access_key'],
