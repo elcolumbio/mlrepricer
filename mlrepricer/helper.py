@@ -4,6 +4,7 @@ import pandas as pd
 from time import sleep
 import mws
 import numpy as np
+from enum import Enum
 
 from . import setup
 
@@ -23,18 +24,23 @@ mwscred = {
     'account_id': setup.configs['account_id'],
     'region': setup.configs['region']}
 
-MARKETPLACES = {
-    "CA": 'A2EUQ1WTGCTBG2',
-    "US": 'ATVPDKIKX0DER',
-    "DE": 'A1PA6795UKMFR9',
-    "ES": 'A1RKKUPIHCS9HS',
-    "FR": 'A13V1IB3VIYZZH',
-    "IN": 'A21TJRUUN4KGV',
-    "IT": 'APJ6JRA9NG5V4',
-    "UK": 'A1F83G8C2ARO7P',
-    "JP": 'A1VC38T7YXB528',
-    "CN": 'AAHKV2X7AFYLW',
-    "MX": 'A1AM78C64UM0Y8'}
+
+class MARKETPLACES(Enum):
+    """Format: Country code: Endpoint, MarketplaceId."""
+
+    AU = ('https://mws.amazonservices.com.au', 'A39IBJ37TRP1C6')
+    BR = ('https://mws.amazonservices.com', 'A2Q3Y263D00KWC')
+    CA = ('https://mws.amazonservices.ca', 'A2EUQ1WTGCTBG2')
+    CN = ('https://mws.amazonservices.com.cn', 'AAHKV2X7AFYLW')
+    DE = ('https://mws-eu.amazonservices.com', 'A1PA6795UKMFR9')
+    ES = ('https://mws-eu.amazonservices.com', 'A1RKKUPIHCS9HS')
+    FR = ('https://mws-eu.amazonservices.com', 'A13V1IB3VIYZZH')
+    IN = ('https://mws.amazonservices.in', 'A21TJRUUN4KGV')
+    IT = ('https://mws-eu.amazonservices.com', 'APJ6JRA9NG5V4')
+    JP = ('https://mws.amazonservices.jp', 'A1VC38T7YXB528')
+    MX = ('https://mws.amazonservices.com.mx', 'A1AM78C64UM0Y8')
+    UK = ('https://mws-eu.amazonservices.com', 'A1F83G8C2ARO7P')
+    US = ('https://mws.amazonservices.com', 'ATVPDKIKX0DER')
 
 
 def dump_dataframe(df, foldername):
@@ -79,11 +85,11 @@ def normalize(f1):
 
 
 def auto_get_report_id(request, rec_level=0):
-    """Takes the response from request_report and returns a reportid"""
-    assert request.parsed.ReportRequestInfo.ReportProcessingStatus == '_SUBMITTED_'
+    """Take the response from request_report and returns a reportid."""
+    request_info = request.parsed.ReportRequestInfo
+    assert request_info.ReportProcessingStatus == '_SUBMITTED_'
     report_api = mws.apis.Reports(**mwscred)
-    request_id = request.parsed.ReportRequestInfo.ReportRequestId
-
+    request_id = request_info.ReportRequestId
     sleep(60)
     statusdict = report_api.get_report_request_list(
         request_ids=request_id).parsed

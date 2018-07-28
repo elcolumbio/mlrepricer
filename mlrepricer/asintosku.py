@@ -11,13 +11,13 @@ import numpy as np
 from . import helper
 
 
-class Match(threading.Thread):
-    """Run once a day to match our asins to skus."""
+class AsintoSku(threading.Thread):
+    """Run once a day to asintosku our asins to skus."""
 
     def run(self):
         print(f'Starting {self.name}')
         report = get_report(ReportType.ACTIVE_LISTINGS.value)
-        match(report)
+        reorganize(deduplicate(read_filter(report)))
         print(f'Exiting {self.name}')
 
 
@@ -31,29 +31,32 @@ def get_report(report_name):
     return report
 
 
-def match(report):
-    """Filter for new offers and nocollusion."""
+def read_filter(report):
     i = pd.read_csv(io.StringIO(report), sep='\t', decimal='.',
                     thousands=None, dayfirst=True)
     i = i[i.loc[:, 'item-condition'] == 11]
     d = i.loc[:, ['seller-sku', 'asin1', 'fulfillment-channel']]
     d['county'] = 1
-    listingperasin = d.groupby(['asin1', 'fulfillment-channel']).agg(
+    return d.groupby(['asin1', 'fulfillment-channel']).agg(
         {'seller-sku': 'first', 'county': 'count'})
 
-    # we ignore duplicates in our matching table
+
+def deduplicate(listingperasin):
+    """Remove duplicates."""
     duplicates = listingperasin[listingperasin.loc[:, 'county'] > 1]
     if len(duplicates) >= 1:
         print(f'you may want to delete one listing per asin {duplicates}')
 
     # those we return
-    nocollusion = listingperasin[listingperasin.county == 1].reset_index()
+    return listingperasin[listingperasin.county == 1].reset_index()
 
-    # we do some final cleanup and reorganize columns
+
+def reorganize(nocollusion):
+    """We do some final cleanup and reorganize columns."""
     # When fulfillment-channel is DEFAULT its seller fulfilled
     nocollusion['isprime'] = np.where(
         nocollusion['fulfillment-channel'] == 'DEFAULT', 0, 1)
     nocollusion.drop(['fulfillment-channel', 'count'], axis=1, inplace=True)
     nocollusion.rename(
         {'asin1': 'asin', 'seller-sku': 'seller_sku'}, axis=1, inplace=True)
-    helper.dump_dataframe(nocollusion, 'mapping')
+    helper.dump_dataframe(nocollusion, 'asintosku')

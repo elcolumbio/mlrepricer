@@ -2,7 +2,7 @@
 """Entry point to run all parts of this packet."""
 
 from .listener import Listener
-from .match import Match
+from .asintosku import AsintoSku
 from .updateprice import Updater
 
 
@@ -12,8 +12,8 @@ def runlistener():
 
 
 def runmatch():
-    """Match your skus to asins isprime combinations."""
-    return Match()
+    """AsintoSku your skus to asins isprime combinations."""
+    return AsintoSku()
 
 
 def runupdater():

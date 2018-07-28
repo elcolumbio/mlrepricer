@@ -3,12 +3,12 @@
 import time
 import redis
 import xmltodict
-from mlrepricer import parser, helper, setup, minmax
 import mws
 import threading
-from ruamel.yaml import YAML
+import datetime as dt
 
-yaml = YAML()
+from mlrepricer import parser, helper, setup, minmax
+
 mwsid = helper.mwscred['account_id']
 decimal = setup.decimal
 
@@ -105,9 +105,8 @@ def main():
             sku, buyboxprice = matchprice(skutuple, winner)
             products_to_update.append(sku, buyboxprice)
             # we store the action in redis
-            # need to find better structure for easy access TODO
-            r.sadd(
-                'actions', yaml.dump([time_changed, asin, sku, buyboxprice]))
+            score = dt.datetime.utcnow().timestamp()
+            r.zadd(asin, score, float(time_changed), str(buyboxprice))
 
         feed_data = create_feed(products_to_update)
         feeds_api = mws.Feeds(**helper.mwscred)
