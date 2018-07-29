@@ -55,7 +55,7 @@ def get_buyboxwinner(parsedxml):
 
 
 def get_sku(asin):
-    """We assume there is you have max one offer per type."""
+    """We assume there you have max one offer per type."""
     m = mapping.asin == asin
     prime_offer = list(mapping[m & (mapping.isprime)].seller_sku.values)
     nonprime_offer = list(mapping[m & ~(mapping.isprime)].seller_sku.values)

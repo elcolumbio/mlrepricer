@@ -9,13 +9,12 @@ If the queue is empty we sleep for 20 seconds.
 import boto3
 import xmltodict
 import threading
-import pandas as pd
 import time
 import datetime
 import redis
 
 
-from . import setup, parser, helper
+from . import setup, helper
 
 
 datafolder = f"{setup.configs['datafolder']}sub/"

@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 """Helps you to setup your repricer."""
+
+from enum import Enum
 import pandas as pd
-from time import sleep
 import mws
 import numpy as np
-from enum import Enum
+from time import sleep
 
 from . import setup
 
