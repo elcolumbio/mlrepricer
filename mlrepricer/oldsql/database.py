@@ -21,7 +21,7 @@ from sqlalchemy import create_engine
 from sqlalchemy import Table, Column, Integer, MetaData
 
 
-from . import setup
+from mlrepricer import setup
 
 
 class SQLite:

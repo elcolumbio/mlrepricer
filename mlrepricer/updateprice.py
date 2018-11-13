@@ -25,6 +25,13 @@ class Updater(threading.Thread):
         main()
 
 
+def get_all_messages(asin):
+    """Return the parsed and flattend message stored in redis zsets."""
+    m = r.zrevrangebyscore(asin, 'inf', '-inf', start=0, num=1,
+                           withscores=True)
+    return parser.main(xmltodict.parse(m[0][0]))
+
+
 def get_latest_message(asin):
     """
     Leverage the structure of redis zsets, sorted sets with score.
@@ -55,7 +62,7 @@ def get_buyboxwinner(parsedxml):
 
 
 def get_sku(asin):
-    """We assume there you have max one offer per type."""
+    """We assume you have max one offer per type."""
     m = mapping.asin == asin
     prime_offer = list(mapping[m & (mapping.isprime)].seller_sku.values)
     nonprime_offer = list(mapping[m & ~(mapping.isprime)].seller_sku.values)
@@ -99,14 +106,16 @@ def main():
         for asin in r.smembers('updated_asins'):
             r.srem(asin)  # that should be ok compared to other options
             m = get_latest_message(asin)
-            time_changed = m['time_changed']
+            time_changed = float(m['time_changed'])
             winner = get_buyboxwinner(m)
             skutuple = get_sku(asin)
             sku, buyboxprice = matchprice(skutuple, winner)
             products_to_update.append(sku, buyboxprice)
             # we store the action in redis
             score = dt.datetime.utcnow().timestamp()
-            r.zadd(asin, score, float(time_changed), str(buyboxprice))
+            # the key considers changes of asin and sku linking
+            r.zadd(
+                f'action_{asin}_{sku}', score, f'{buyboxprice}_{time_changed}')
 
         feed_data = create_feed(products_to_update)
         feeds_api = mws.Feeds(**helper.mwscred)

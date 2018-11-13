@@ -8,12 +8,21 @@ Before we used a file dump and parsed afterwards.
 """
 
 import datetime
+import pandas as pd
+import xmltodict
 
 from . import setup
 from . import helper
 
-marketplaceid = helper.MARKETPLACES[setup.configs['region']]
+marketplaceid = helper.Marketplaces[setup.configs['region']].marketplace_id
 currencycode = setup.configs['currencycode']
+
+
+def parse(message):
+    """Parse the message and return a pandas dataframe."""
+    r = xmltodict.parse(message[0]['Body'])
+    # here we call the parser.py file •=•
+    return pd.DataFrame(main(r))
 
 
 def validate_message_meta(message):
@@ -78,7 +87,7 @@ def parse_offers(payload):
 
 
 def main(message):
-    """Input is the message body parsed by xmltodict, outputs a dataframe"""
+    """Input is the message body, here parsing by xmltodict, outputs a dataframe"""
     validate_message_meta(message)
     payload = message['Notification']['NotificationPayload'][
         'AnyOfferChangedNotification']
@@ -86,4 +95,4 @@ def main(message):
 
 
 if __name__ == '__main__':
-    main()
+    parse()

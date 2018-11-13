@@ -15,7 +15,8 @@ import threading
 import pandas as pd
 import time
 
-from . import setup, schemas, parser
+from . import schemas
+from mlrepricer import setup, parser
 from .example_destination import SQLite  # AzureSQL or your own
 
 
