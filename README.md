@@ -1,9 +1,17 @@
 # mlrepricer
 
-Everyone is welcome to contribute.
-There are lots of improvements needed.
+Pricing on platforms is essential.
+We find it ridiculous when 100 000 merchant are useing the same APIs, but there are no Open Source libraries.
 
+We want to share knowledge, provide the data infrastracture where you can deploy your strategies on top.
+There is nothing which couldnt help us to move forward.
 
+Since the maintainer is a programming newbie.
+We are first aiming for the most simple pricing functionality.
+With a lot of tests and fall back functions.
+Tough we are aiming for the highest coding quality from the start.
+
+I had some brief thoughts about the machine learning part:
 One perspective is from a Multi Agent Problem.
 Maybe it's over the top and the problem is simpler and quite static?
 
