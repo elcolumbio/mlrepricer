@@ -11,16 +11,6 @@ We are first aiming for the most simple pricing functionality.
 With a lot of tests and fall back functions.
 Tough we are aiming for the highest coding quality from the start.
 
-I had some brief thoughts about the machine learning part:
-One perspective is from a Multi Agent Problem.
-Maybe it's over the top and the problem is simpler and quite static?
-
-Some ressources about Multi Agent learning:
-https://github.com/LantaoYu/MARL-Papers
-https://www.youtube.com/watch?v=yE62Zwhmzi8
-https://www.youtube.com/watch?v=bjjoHji8KUQ
-
-
 We provide you some modules you can use in your existing infrastructure.
 It should be very easy to do so.
 
@@ -30,12 +20,6 @@ We still have schema validations for sql, need some work to integrate the missin
 This is not a repricer. It should be used for statistical and ml analysis of your data.
 It would be nice if we share statistic analysis and discuss them and validate them.
 The data on it's own is not valueable.
-
-The linear regression for nonprime and prime listings, we can find.
-
-
-# I think every amazon merchant should do some statistical analysis.
-If you know some python, we should help you.
 
 # Where are we going?
 There won't be a service ever. You can see that by how flexible we build it, for datastorage, modularity.
@@ -62,18 +46,6 @@ It's like scissors and papers with price elasticity and estimates about sales.
 For the start we can make it as simple as possible.
 If this is going very well, we will build a live repricer which is constantly learning.
 
-## Dependencies
-We are supporting the mws python api sdk: https://github.com/python-amazon-mws/python-amazon-mws
-boto3
-ruamel
-xmltodict
-pandas
-ruamel
-redis
-numpy
-jupyterlab
-
-and others for prediction
 
 ## How to get started?
 For more uptodate guides please check out the notebooks.
