@@ -17,7 +17,6 @@ rediscred = {
     'port': setup.configs['Redis']['port']}
 redispw = setup.configs['Redis']['password']
 if redispw is not None:
-    print(redispw)
     rediscred.update({'password': redispw})
 
 mwscred = {

@@ -23,4 +23,3 @@ if configs['region'] in ['IT', 'FR', 'ES', 'DE']:
     decimal = ','
 else:
     decimal = '.'
-decimal = ','

@@ -1,17 +1,18 @@
 # -*- coding: utf-8 -*-
 
 """
-Get messages save them in your redis database and delete them from the queue.
+Get messages save them locally and delete them from the queue.
 
 It's very fast we get thousands messages per minute.
 If the queue is empty we sleep for 20 seconds.
 """
 import boto3
-import datetime
-import redis
+import xmltodict
 import threading
 import time
-import xmltodict
+import datetime
+import redis
+
 
 from . import setup, helper
 
@@ -26,12 +27,12 @@ queue = sqsres.get_queue_by_name(QueueName=queuename)
 
 
 class Listener(threading.Thread):
-    """Demon thread read data from aws queue and dump in Database."""
+    """Demon Thread read data from aws queue and dump in Database."""
 
     def run(self):
         """Thread should run only once."""
         print(f'Starting {self.name}')
-        main()
+        redis_main()
 
 
 def receive_message():
@@ -67,26 +68,9 @@ def quickparse_message(message):
     return asin, score
 
 
-def start_database():
-    """We use redis as the default, feel free to use whatever you want."""
-    return redis.StrictRedis(**helper.rediscred, decode_responses=True)
-
-
-def store_into_database(db, asin, score, message):
-    """Store the complete message from the aws queue, we parse it later."""
-    db.zadd(asin, float(score), str(message))
-    db.sadd('updated_asins', asin)  # memo that we have to take action
-    return True
-
-
-def main():
-    """
-    Sleeps 20 seconds after calls to the aws queue and dump into database.
-
-    You should be able to use another database, if you only want to bulk write
-    to your database we need to alter the design a bit.
-    """
-    db = start_database()  # database specific
+def redis_main():
+    """Recieves every 20 seconds a new queue and outputs into a redis."""
+    r = redis.StrictRedis(**helper.rediscred, decode_responses=True)
     while True:
         queue = sqsres.get_queue_by_name(QueueName=queuename)
         numbermessages = int(queue.attributes['ApproximateNumberOfMessages'])
@@ -96,9 +80,7 @@ def main():
             if message is None:
                 break
             asin, score = quickparse_message(message)
-            # database specific
-            if store_into_database(db, asin, score, message):
-                pass
-                # delete_message(message)
-
+            r.zadd(asin, float(score), str(message))
+            r.sadd('updated_asins', asin)
+            # delete_message(message)
         time.sleep(20)
