@@ -2,11 +2,10 @@
 """Helps you to setup your repricer."""
 
 from enum import Enum
-import pandas as pd
 import mws
 import numpy as np
+import pandas as pd
 from time import sleep
-import xmltodict
 
 from . import setup
 
@@ -59,13 +58,6 @@ def load_dataframe(foldername):
     """Load pandas df from storage."""
     with open(datafolder+foldername, 'rb') as f:
         return pd.read_msgpack(f)
-
-
-def parse(message):
-    """Parse the message and return a pandas dataframe."""
-    r = xmltodict.parse(message['Body'])
-    # here we call the parser.py file •=•
-    return pd.DataFrame(parser.main(r))
 
 
 def cleanup(df):

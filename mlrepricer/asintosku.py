@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import io
 import mws
 from mws.apis.reports import ReportType
-import pandas as pd
-import io
-import threading
 import numpy as np
+import pandas as pd
+import threading
 
 from . import helper
 

@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 
 """
-Created on SA 2018.05.12 @author: elcolumbio .
-
 We call this quite hidden in listener.py in the dump_message_tosql method.
 Before we used a file dump and parsed afterwards.
 """
@@ -11,8 +9,7 @@ import datetime
 import pandas as pd
 import xmltodict
 
-from . import setup
-from . import helper
+from . import helper, setup
 
 marketplaceid = helper.Marketplaces[setup.configs['region']].marketplace_id
 currencycode = setup.configs['currencycode']

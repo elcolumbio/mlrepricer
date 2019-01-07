@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
 """Pushing new prices to amazon with the mws python api."""
+import datetime as dt
+import mws
+import threading
 import time
 import redis
 import xmltodict
-import mws
-import threading
-import datetime as dt
 
 from mlrepricer import parser, helper, setup, minmax
 
 mwsid = helper.mwscred['account_id']
 decimal = setup.decimal
 
-r = redis.StrictRedis(helper.rediscred, decode_responses=True)
+r = redis.StrictRedis(**helper.rediscred, decode_responses=True)
 mapping = minmax.load_csv()
 
 
@@ -104,7 +104,7 @@ def main():
     while True:
         products_to_update = []
         for asin in r.smembers('updated_asins'):
-            r.srem(asin)  # that should be ok compared to other options
+            r.srem('updated_asins', [asin])  # remove memo to process asin
             m = get_latest_message(asin)
             time_changed = float(m['time_changed'])
             winner = get_buyboxwinner(m)

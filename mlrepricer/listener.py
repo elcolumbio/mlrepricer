@@ -3,7 +3,7 @@
 """
 Get messages save them in your redis database and delete them from the queue.
 
-It's very fast we get thousands messages per minute.
+It's very fast we can get thousands messages per minute.
 If the queue is empty we sleep for 20 seconds.
 """
 import boto3
@@ -47,28 +47,33 @@ def receive_message():
 
 def delete_message(d):
     """Delete the messages we have processed."""
-    d = [d[i:i + 10] for i in range(0, len(d), 10)]  # 10 is max batchsize
-    for batch in d:
-        entries = []
-        for idx, receipt_handle in enumerate(batch):
-            entries.append({'Id': str(idx), 'ReceiptHandle': receipt_handle})
-        sqs.delete_message_batch(QueueUrl=queue.url, Entries=entries)
+    if isinstance(d, str):
+        sqs.delete_message(QueueUrl=queue.url, ReceiptHandle=d)
+    else:  # deprecated bulk deleting
+        d = [d[i:i + 10] for i in range(0, len(d), 10)]  # 10 is max batchsize
+        for batch in d:
+            entries = []
+            for idx, receipt_handle in enumerate(batch):
+                entries.append(
+                    {'Id': str(idx), 'ReceiptHandle': receipt_handle})
+            sqs.delete_message_batch(QueueUrl=queue.url, Entries=entries)
 
 
 def quickparse_message(message):
-    """We have to preparse it to get the timestamp and asin."""
-    message = message[0]['Body']
-    mparsed = xmltodict.parse(message)['Notification'][
-        'NotificationPayload']['AnyOfferChangedNotification']
-    asin = mparsed['OfferChangeTrigger']['ASIN']
+    """We have to pre-parse it to get the timestamp and asin."""
+    message_parsed = xmltodict.parse(message[0]['Body'])
+    receipt_handle = message[0]['ReceiptHandle']
+    payload = message_parsed['Notification']['NotificationPayload'][
+        'AnyOfferChangedNotification']['OfferChangeTrigger']
+    asin = payload['ASIN']
     score = datetime.datetime.strptime(
-        mparsed['OfferChangeTrigger']['TimeOfOfferChange'],
-        "%Y-%m-%dT%H:%M:%S.%fZ").timestamp()
-    return asin, score
+        payload['TimeOfOfferChange'], "%Y-%m-%dT%H:%M:%S.%fZ").timestamp()
+    return asin, score, receipt_handle
 
 
 def start_database():
     """We use redis as the default, feel free to use whatever you want."""
+    # ToDO for windows WSL how to i start the redis server?
     return redis.StrictRedis(**helper.rediscred, decode_responses=True)
 
 
@@ -95,10 +100,9 @@ def main():
             message = receive_message().get('Messages', None)
             if message is None:
                 break
-            asin, score = quickparse_message(message)
-            # database specific
+            asin, score, receipt_handle = quickparse_message(message)
+            # database specific, here we delete one message a time
             if store_into_database(db, asin, score, message):
-                pass
-                # delete_message(message)
+                delete_message(receipt_handle)
 
         time.sleep(20)
