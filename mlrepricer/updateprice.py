@@ -27,18 +27,18 @@ class Updater(threading.Thread):
 
 def get_all_messages(asin):
     """Return the parsed and flattend message stored in redis zsets."""
-    m = r.zrevrangebyscore(asin, 'inf', '-inf', start=0, num=1,
-                           withscores=True)
-    return parser.main(xmltodict.parse(m[0][0]))
+    message = r.zrevrangebyscore(asin, 'inf', '-inf', start=0, num=1,
+                                 withscores=True)
+    return parser.main(xmltodict.parse(message[0][0]))
 
 
 def get_latest_message(asin):
     """Return the latest message per asin as a pandas dataframe."""
     # Leverage the structure of redis zsets, sorted sets with score.
-    m = r.zrevrangebyscore(asin, 'inf', '-inf', start=0, num=1,
-                           withscores=True)
-    if m:
-        latest_message = parser.parse(eval(m[0][0]))
+    message = r.zrevrangebyscore(asin, 'inf', '-inf', start=0, num=1,
+                                 withscores=True)
+    if message:
+        latest_message = parser.parse(eval(message[0][0]))
         if latest_message.empty:
             latest_message = False
     else:  # memo without data, shouldn't happen in production
@@ -76,6 +76,7 @@ def get_sku(asin):
 
 def matchprice(sku, winner):
     """Primitive repricing rule."""
+    # x = [prime_sku, prime_price], y = [nonprime_sku, nonprime_price]
     for x, y in zip(sku, winner):
         if x and y:  # When the buybox is the same type as our listing
             sellersku = x[0]
@@ -92,14 +93,14 @@ def boundaries(sku, buyboxprice):
     return min and max  # return True if new prize is between min and max
 
 
-def create_feed(products_to_update):
-    """Process a tsv file for the mws feeds api."""
+def create_feed(new_prices):
+    """Create a tsv file for the mws feeds api."""
     feed_header = 'sku\tprice\n'
     feed_row_list = []
 
-    for product in products_to_update:
+    for product in new_prices:
         if product is not None:
-            # the feedrow format: sku\tprice
+            # the feedrow format: 'sku\tprice'
             feed_row = f"{product[0]}\t{str(product[1]).replace('.', decimal)}"
             feed_row_list.append(feed_row)
 
@@ -111,26 +112,27 @@ def main():
     """Pop the list of changed asins and take action on them."""
     while True:
         starttime = time.time()
-        products_to_update = []
+        new_prices = []
         for asin in r.smembers('updated_asins'):
             print(asin)
             r.srem('updated_asins', asin)  # remove memo to process asin
-            m = get_latest_message(asin)
-            if not isinstance(m, bool):
-                time_changed = m['time_changed'][0].isoformat()  # all rows are same date
-                winner = get_buyboxwinner(m)
+            message = get_latest_message(asin)
+            if not isinstance(message, bool):
+                # all rows of one message have the same date
+                winner = get_buyboxwinner(message)
                 skutuple = get_sku(asin)
                 sku, buyboxprice = matchprice(skutuple, winner)
                 if sku and buyboxprice and boundaries(sku, buyboxprice):
                     print(sku, buyboxprice)
-                    products_to_update.append([sku, buyboxprice])
+                    new_prices.append([sku, buyboxprice])
                     # we store the action in redis
                     score = dt.datetime.utcnow().timestamp()
+                    time_changed = message['time_changed'][0].isoformat()
                     # the key considers changes of asin and sku linking
-                    r.zadd(
-                        f'action_{asin}_{sku}', score, f'{buyboxprice}_{time_changed}')
+                    r.zadd(f'action_{asin}_{sku}', score,
+                           f'{buyboxprice}_{time_changed}')
 
-        feed_data = create_feed(products_to_update)
+        feed_data = create_feed(new_prices)
         feeds_api = mws.Feeds(**helper.mwscred)
         feeds_api.submit_feed(feed_data, '_POST_FLAT_FILE_INVLOADER_DATA_')
         # We send maximum every 120 seconds a new feed to the mws api.
