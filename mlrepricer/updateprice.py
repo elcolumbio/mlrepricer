@@ -87,6 +87,9 @@ def matchprice(sku, winner):
 
 def boundaries(sku, buyboxprice):
     df = minmax.load_csv()
+    min = buyboxprice >= df[df.seller_sku == sku]['min'].values[0]
+    max = buyboxprice <= df[df.seller_sku == sku]['max'].values[0]
+    return min and max  # return True if new prize is between min and max
 
 
 def create_feed(products_to_update):
@@ -118,7 +121,7 @@ def main():
                 winner = get_buyboxwinner(m)
                 skutuple = get_sku(asin)
                 sku, buyboxprice = matchprice(skutuple, winner)
-                if sku and buyboxprice:
+                if sku and buyboxprice and boundaries(sku, buyboxprice):
                     print(sku, buyboxprice)
                     products_to_update.append([sku, buyboxprice])
                     # we store the action in redis
@@ -130,5 +133,5 @@ def main():
         feed_data = create_feed(products_to_update)
         feeds_api = mws.Feeds(**helper.mwscred)
         feeds_api.submit_feed(feed_data, '_POST_FLAT_FILE_INVLOADER_DATA_')
-        # We send maximum every 30 seconds a new feed to the mws api.
-        time.sleep(30.0 - ((time.time() - starttime) % 30.0))
+        # We send maximum every 120 seconds a new feed to the mws api.
+        time.sleep(120.0 - ((time.time() - starttime) % 120.0))
