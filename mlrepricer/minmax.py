@@ -17,13 +17,14 @@ def load_csv():
 
     It is a userfile so we transform decimal to local.
     """
-    return pd.read_csv(datafolder+filename, decimal=decimal).astype(
+    df = pd.read_csv(datafolder+filename, decimal=decimal).astype(
         {'min': 'float', 'max': 'float'})
+    return df
 
 
 def dump_csv():
     """Merge old and new, then present empty values first."""
-    df = helper.load_dataframe('mapping').reset_index()
+    df = helper.load_dataframe('asintosku').reset_index()
     df['min'] = None
     df['max'] = None
     df.asin = df.asin + np.where(

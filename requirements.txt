@@ -3,3 +3,6 @@ xmltodict
 boto3
 mws
 pytest
+requests
+lxml
+plotly

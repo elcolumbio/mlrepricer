@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
 """Pushing new prices to amazon with the mws python api."""
+import datetime as dt
+import mws
+import threading
 import time
 import redis
 import xmltodict
-import mws
-import threading
-import datetime as dt
 
 from mlrepricer import parser, helper, setup, minmax
 
 mwsid = helper.mwscred['account_id']
 decimal = setup.decimal
 
-r = redis.StrictRedis(helper.rediscred, decode_responses=True)
+r = redis.StrictRedis(**helper.rediscred, decode_responses=True)
 mapping = minmax.load_csv()
 
 
@@ -25,18 +25,28 @@ class Updater(threading.Thread):
         main()
 
 
+def get_all_messages(asin):
+    """Return the parsed and flattend message stored in redis zsets."""
+    message = r.zrevrangebyscore(asin, 'inf', '-inf', start=0, num=1,
+                                 withscores=True)
+    return parser.main(xmltodict.parse(message[0][0]))
+
+
 def get_latest_message(asin):
-    """
-    Leverage the structure of redis zsets, sorted sets with score.
+    """Return the latest message per asin as a pandas dataframe."""
+    # Leverage the structure of redis zsets, sorted sets with score.
+    message = r.zrevrangebyscore(asin, 'inf', '-inf', start=0, num=1,
+                                 withscores=True)
+    if message:
+        latest_message = parser.parse(eval(message[0][0]))
+        if latest_message.empty:
+            latest_message = False
+    else:  # memo without data, shouldn't happen in production
+        latest_message = False
+    return latest_message
 
-    Return the parsed and flattend message.
-    """
-    m = r.zrevrangebyscore(asin, 'inf', '-inf', start=0, num=1,
-                           withscores=True)
-    return parser.main(xmltodict.parse(m[0][0]))
 
-
-def get_buyboxwinner(parsedxml):
+def get_buyboxwinner(message_df):
     """
     Return one or multiple winner for prime and not prime offers.
 
@@ -44,7 +54,8 @@ def get_buyboxwinner(parsedxml):
     Format: ([prime_offerobject, ...], [nonprime_offerobject, ...])
     """
     prime_winner, nonprime_winner = [], []
-    for x in parsedxml:
+    for x in message_df.iterrows():
+        x = x[1]  # get values for each row
         if (x['sellerid'] == mwsid) & (x['isbuyboxwinner']):
             return [], []  # if we are winning, we are happy
         elif x['isbuyboxwinner'] & x['isprime']:
@@ -55,35 +66,41 @@ def get_buyboxwinner(parsedxml):
 
 
 def get_sku(asin):
-    """We assume there you have max one offer per type."""
-    m = mapping.asin == asin
-    prime_offer = list(mapping[m & (mapping.isprime)].seller_sku.values)
-    nonprime_offer = list(mapping[m & ~(mapping.isprime)].seller_sku.values)
+    """We assume you have max one offer per type."""
+    prime_offer = list(
+        mapping[mapping.asin == asin + '_prime'].seller_sku.values)
+    nonprime_offer = list(
+        mapping[mapping.asin == asin + '_seller'].seller_sku.values)
     return (prime_offer, nonprime_offer)
 
 
 def matchprice(sku, winner):
     """Primitive repricing rule."""
+    # x = [prime_sku, prime_price], y = [nonprime_sku, nonprime_price]
     for x, y in zip(sku, winner):
         if x and y:  # When the buybox is the same type as our listing
             sellersku = x[0]
             p = [c['price'] for c in y]
             buyboxprice = round(sum(p)/float(len(p)), 2)
             return sellersku, buyboxprice
+    return False, False
 
 
 def boundaries(sku, buyboxprice):
     df = minmax.load_csv()
+    min = buyboxprice >= df[df.seller_sku == sku]['min'].values[0]
+    max = buyboxprice <= df[df.seller_sku == sku]['max'].values[0]
+    return min and max  # return True if new prize is between min and max
 
 
-def create_feed(products_to_update):
-    """Process a tsv file for the mws feeds api."""
+def create_feed(new_prices):
+    """Create a tsv file for the mws feeds api."""
     feed_header = 'sku\tprice\n'
     feed_row_list = []
 
-    for product in products_to_update:
+    for product in new_prices:
         if product is not None:
-            # the feedrow format: sku\tprice
+            # the feedrow format: 'sku\tprice'
             feed_row = f"{product[0]}\t{str(product[1]).replace('.', decimal)}"
             feed_row_list.append(feed_row)
 
@@ -93,24 +110,30 @@ def create_feed(products_to_update):
 
 def main():
     """Pop the list of changed asins and take action on them."""
-    starttime = time.time()
     while True:
-        products_to_update = []
+        starttime = time.time()
+        new_prices = []
         for asin in r.smembers('updated_asins'):
-            r.srem(asin)  # that should be ok compared to other options
-            m = get_latest_message(asin)
-            time_changed = m['time_changed']
-            winner = get_buyboxwinner(m)
-            skutuple = get_sku(asin)
-            sku, buyboxprice = matchprice(skutuple, winner)
-            products_to_update.append(sku, buyboxprice)
-            # we store the action in redis
-            score = dt.datetime.utcnow().timestamp()
-            r.zadd(asin, score, float(time_changed), str(buyboxprice))
+            print(asin)
+            r.srem('updated_asins', asin)  # remove memo to process asin
+            message = get_latest_message(asin)
+            if not isinstance(message, bool):
+                # all rows of one message have the same date
+                winner = get_buyboxwinner(message)
+                skutuple = get_sku(asin)
+                sku, buyboxprice = matchprice(skutuple, winner)
+                if sku and buyboxprice and boundaries(sku, buyboxprice):
+                    print(sku, buyboxprice)
+                    new_prices.append([sku, buyboxprice])
+                    # we store the action in redis
+                    score = dt.datetime.utcnow().timestamp()
+                    time_changed = message['time_changed'][0].isoformat()
+                    # the key considers changes of asin and sku linking
+                    r.zadd(f'action_{asin}_{sku}', score,
+                           f'{buyboxprice}_{time_changed}')
 
-        feed_data = create_feed(products_to_update)
+        feed_data = create_feed(new_prices)
         feeds_api = mws.Feeds(**helper.mwscred)
-        return feeds_api.submit_feed(
-            feed_data, '_POST_FLAT_FILE_INVLOADER_DATA_')
-        # We send maximum every 30 seconds a new feed to the mws api.
-        time.sleep(30.0 - ((time.time() - starttime) % 30.0))
+        feeds_api.submit_feed(feed_data, '_POST_FLAT_FILE_INVLOADER_DATA_')
+        # We send maximum every 120 seconds a new feed to the mws api.
+        time.sleep(120.0 - ((time.time() - starttime) % 120.0))

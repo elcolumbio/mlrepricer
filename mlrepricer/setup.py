@@ -19,6 +19,7 @@ with open(path_to_config, 'r') as f:
     configs = yaml.load(f)
 
 
+# your decimal seperator
 if configs['region'] in ['IT', 'FR', 'ES', 'DE']:
     decimal = ','
 else:

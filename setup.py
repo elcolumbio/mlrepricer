@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(name='mlrepricer',
       version='0.1',
@@ -7,4 +7,4 @@ setup(name='mlrepricer',
       author='Florian Benkö',
       author_email='f.benkoe@innotrade24.de',
       license='Apache License, Version 2.0 (the "License")',
-      packages=['mlrepricer'])
+      packages=find_packages())

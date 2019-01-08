@@ -2,9 +2,9 @@
 """Helps you to setup your repricer."""
 
 from enum import Enum
-import pandas as pd
 import mws
 import numpy as np
+import pandas as pd
 from time import sleep
 
 from . import setup
@@ -16,7 +16,6 @@ rediscred = {
     'port': setup.configs['Redis']['port']}
 redispw = setup.configs['Redis']['password']
 if redispw is not None:
-    print(redispw)
     rediscred.update({'password': redispw})
 
 mwscred = {
@@ -26,8 +25,8 @@ mwscred = {
     'region': setup.configs['region']}
 
 
-class MARKETPLACES(Enum):
-    """Format: Country code: Endpoint, MarketplaceId."""
+class Marketplaces(Enum):
+    """Format: Country code: endpoint, marketplace_id."""
 
     AU = ('https://mws.amazonservices.com.au', 'A39IBJ37TRP1C6')
     BR = ('https://mws.amazonservices.com', 'A2Q3Y263D00KWC')
@@ -42,6 +41,11 @@ class MARKETPLACES(Enum):
     MX = ('https://mws.amazonservices.com.mx', 'A1AM78C64UM0Y8')
     UK = ('https://mws-eu.amazonservices.com', 'A1F83G8C2ARO7P')
     US = ('https://mws.amazonservices.com', 'ATVPDKIKX0DER')
+
+    def __init__(self, endpoint, marketplace_id):
+        """Easy dot access like: Marketplaces.endpoint ."""
+        self.endpoint = endpoint
+        self.marketplace_id = marketplace_id
 
 
 def dump_dataframe(df, foldername):
@@ -68,7 +72,7 @@ def cleanup(df):
 
 
 def normalize(f1):
-    """Take output from cleanup and scales and merge data."""
+    """Rescale and merge data, best done after cleanup."""
     # normalize the feedback count to a number between 0 and 1
     f1['feedback'] = np.where(np.log(f1.feedback+1)/10 <= 1,
                               np.log(f1.feedback+1)/10, 1)
@@ -86,7 +90,7 @@ def normalize(f1):
 
 
 def auto_get_report_id(request, rec_level=0):
-    """Take the response from request_report and returns a reportid."""
+    """Take the response from request_report and return a reportid."""
     request_info = request.parsed.ReportRequestInfo
     assert request_info.ReportProcessingStatus == '_SUBMITTED_'
     report_api = mws.apis.Reports(**mwscred)

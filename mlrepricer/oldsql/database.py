@@ -21,16 +21,11 @@ from sqlalchemy import create_engine
 from sqlalchemy import Table, Column, Integer, MetaData
 
 
-from . import setup
+from mlrepricer import setup
 
 
 class SQLite:
-    """
-    Default local SQLite database.
-
-    You can even leverage another metaclass like we do here with
-    sqlalchemy.types.
-    """
+    """Default local SQLite database."""
 
     def __init__(self):
         """Map the dtypes of your database to our definitions."""
