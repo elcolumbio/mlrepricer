@@ -38,10 +38,12 @@ def get_latest_message(asin):
     m = r.zrevrangebyscore(asin, 'inf', '-inf', start=0, num=1,
                            withscores=True)
     if m:
-        latest_mesage = parser.parse(eval(m[0][0]))
+        latest_message = parser.parse(eval(m[0][0]))
+        if latest_message.empty:
+            latest_message = False
     else:  # memo without data, shouldn't happen in production
-        latest_mesage = False
-    return latest_mesage
+        latest_message = False
+    return latest_message
 
 
 def get_buyboxwinner(message_df):
@@ -53,7 +55,7 @@ def get_buyboxwinner(message_df):
     """
     prime_winner, nonprime_winner = [], []
     for x in message_df.iterrows():
-        x = x[1]  # get values of each row
+        x = x[1]  # get values for each row
         if (x['sellerid'] == mwsid) & (x['isbuyboxwinner']):
             return [], []  # if we are winning, we are happy
         elif x['isbuyboxwinner'] & x['isprime']:
@@ -65,9 +67,10 @@ def get_buyboxwinner(message_df):
 
 def get_sku(asin):
     """We assume you have max one offer per type."""
-    m = mapping.asin == asin
-    prime_offer = list(mapping[m & (mapping.isprime)].seller_sku.values)
-    nonprime_offer = list(mapping[m & ~(mapping.isprime)].seller_sku.values)
+    prime_offer = list(
+        mapping[mapping.asin == asin + '_prime'].seller_sku.values)
+    nonprime_offer = list(
+        mapping[mapping.asin == asin + '_seller'].seller_sku.values)
     return (prime_offer, nonprime_offer)
 
 
@@ -79,6 +82,7 @@ def matchprice(sku, winner):
             p = [c['price'] for c in y]
             buyboxprice = round(sum(p)/float(len(p)), 2)
             return sellersku, buyboxprice
+    return False, False
 
 
 def boundaries(sku, buyboxprice):
@@ -102,29 +106,29 @@ def create_feed(products_to_update):
 
 def main():
     """Pop the list of changed asins and take action on them."""
-    starttime = time.time()
     while True:
+        starttime = time.time()
         products_to_update = []
         for asin in r.smembers('updated_asins'):
-            r.srem('updated_asins', [asin])  # remove memo to process asin
+            print(asin)
+            r.srem('updated_asins', asin)  # remove memo to process asin
             m = get_latest_message(asin)
             if not isinstance(m, bool):
-                print(m)
                 time_changed = m['time_changed'][0].isoformat()  # all rows are same date
                 winner = get_buyboxwinner(m)
                 skutuple = get_sku(asin)
                 sku, buyboxprice = matchprice(skutuple, winner)
-                products_to_update.append(sku, buyboxprice)
-                # we store the action in redis
-                score = dt.datetime.utcnow().timestamp()
-                # the key considers changes of asin and sku linking
-                r.zadd(
-                    f'action_{asin}_{sku}', score, f'{buyboxprice}_{time_changed}')
+                if sku and buyboxprice:
+                    print(sku, buyboxprice)
+                    products_to_update.append([sku, buyboxprice])
+                    # we store the action in redis
+                    score = dt.datetime.utcnow().timestamp()
+                    # the key considers changes of asin and sku linking
+                    r.zadd(
+                        f'action_{asin}_{sku}', score, f'{buyboxprice}_{time_changed}')
 
         feed_data = create_feed(products_to_update)
-        print(feed_data)
         feeds_api = mws.Feeds(**helper.mwscred)
-        return feeds_api.submit_feed(
-            feed_data, '_POST_FLAT_FILE_INVLOADER_DATA_')
+        feeds_api.submit_feed(feed_data, '_POST_FLAT_FILE_INVLOADER_DATA_')
         # We send maximum every 30 seconds a new feed to the mws api.
         time.sleep(30.0 - ((time.time() - starttime) % 30.0))
