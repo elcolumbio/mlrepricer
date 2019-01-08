@@ -15,8 +15,9 @@ class AsintoSku(threading.Thread):
     """Run once a day to asintosku our asins to skus."""
 
     def run(self):
-        print(f'Starting {self.name}')
+        print(f'Starting {self.name}, this may take 2 mins')
         report = get_report(ReportType.ACTIVE_LISTINGS.value)
+        # store the report
         reorganize(deduplicate(read_filter(report)))
         print(f'Exiting {self.name}')
 
@@ -56,7 +57,7 @@ def reorganize(nocollusion):
     # When fulfillment-channel is DEFAULT its seller fulfilled
     nocollusion['isprime'] = np.where(
         nocollusion['fulfillment-channel'] == 'DEFAULT', 0, 1)
-    nocollusion.drop(['fulfillment-channel', 'count'], axis=1, inplace=True)
+    nocollusion.drop(['fulfillment-channel', 'county'], axis=1, inplace=True)
     nocollusion.rename(
         {'asin1': 'asin', 'seller-sku': 'seller_sku'}, axis=1, inplace=True)
     helper.dump_dataframe(nocollusion, 'asintosku')

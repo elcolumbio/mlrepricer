@@ -33,17 +33,18 @@ def get_all_messages(asin):
 
 
 def get_latest_message(asin):
-    """
-    Leverage the structure of redis zsets, sorted sets with score.
-
-    Return the parsed and flattend message.
-    """
+    """Return the latest message per asin as a pandas dataframe."""
+    # Leverage the structure of redis zsets, sorted sets with score.
     m = r.zrevrangebyscore(asin, 'inf', '-inf', start=0, num=1,
                            withscores=True)
-    return parser.main(xmltodict.parse(m[0][0]))
+    if m:
+        latest_mesage = parser.parse(eval(m[0][0]))
+    else:  # memo without data, shouldn't happen in production
+        latest_mesage = False
+    return latest_mesage
 
 
-def get_buyboxwinner(parsedxml):
+def get_buyboxwinner(message_df):
     """
     Return one or multiple winner for prime and not prime offers.
 
@@ -51,7 +52,8 @@ def get_buyboxwinner(parsedxml):
     Format: ([prime_offerobject, ...], [nonprime_offerobject, ...])
     """
     prime_winner, nonprime_winner = [], []
-    for x in parsedxml:
+    for x in message_df.iterrows():
+        x = x[1]  # get values of each row
         if (x['sellerid'] == mwsid) & (x['isbuyboxwinner']):
             return [], []  # if we are winning, we are happy
         elif x['isbuyboxwinner'] & x['isprime']:
@@ -106,18 +108,21 @@ def main():
         for asin in r.smembers('updated_asins'):
             r.srem('updated_asins', [asin])  # remove memo to process asin
             m = get_latest_message(asin)
-            time_changed = float(m['time_changed'])
-            winner = get_buyboxwinner(m)
-            skutuple = get_sku(asin)
-            sku, buyboxprice = matchprice(skutuple, winner)
-            products_to_update.append(sku, buyboxprice)
-            # we store the action in redis
-            score = dt.datetime.utcnow().timestamp()
-            # the key considers changes of asin and sku linking
-            r.zadd(
-                f'action_{asin}_{sku}', score, f'{buyboxprice}_{time_changed}')
+            if not isinstance(m, bool):
+                print(m)
+                time_changed = m['time_changed'][0].isoformat()  # all rows are same date
+                winner = get_buyboxwinner(m)
+                skutuple = get_sku(asin)
+                sku, buyboxprice = matchprice(skutuple, winner)
+                products_to_update.append(sku, buyboxprice)
+                # we store the action in redis
+                score = dt.datetime.utcnow().timestamp()
+                # the key considers changes of asin and sku linking
+                r.zadd(
+                    f'action_{asin}_{sku}', score, f'{buyboxprice}_{time_changed}')
 
         feed_data = create_feed(products_to_update)
+        print(feed_data)
         feeds_api = mws.Feeds(**helper.mwscred)
         return feeds_api.submit_feed(
             feed_data, '_POST_FLAT_FILE_INVLOADER_DATA_')

@@ -17,8 +17,9 @@ def load_csv():
 
     It is a userfile so we transform decimal to local.
     """
-    return pd.read_csv(datafolder+filename, decimal=decimal).astype(
+    df = pd.read_csv(datafolder+filename, decimal=decimal).astype(
         {'min': 'float', 'max': 'float'})
+    return df
 
 
 def dump_csv():
