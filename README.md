@@ -69,6 +69,7 @@ Right now i start redis manually in the bash on Windows.
 You can clone it locally and cd into the top level folder.
 and install it with: pip install .
 
+I use my version of mws: https://github.com/innotrade24/python-amazon-mws1
 ## Usage
 See the notebooks. Download this repo and unpack it, or render them in github.
 
