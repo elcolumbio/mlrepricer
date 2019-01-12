@@ -50,14 +50,18 @@ def get_buyboxwinner(message_df):
     """
     Return one or multiple winner for prime and not prime offers.
 
-    If we are not in the buybox.
     Format: ([prime_offerobject, ...], [nonprime_offerobject, ...])
+    If both lists are empty, nobody owns the buybox.
     """
     prime_winner, nonprime_winner = [], []
     for x in message_df.iterrows():
         x = x[1]  # get values for each row
         if (x['sellerid'] == mwsid) & (x['isbuyboxwinner']):
-            return [], []  # if we are winning, we are happy
+            # mark this as own listings
+            if x['isbuyboxwinner'] & x['isprime']:
+                prime_winner.append(x)
+            elif x['isbuyboxwinner'] & ~x['isprime']:
+                nonprime_winner.append(x)
         elif x['isbuyboxwinner'] & x['isprime']:
             prime_winner.append(x)
         elif x['isbuyboxwinner'] & ~x['isprime']:
@@ -66,12 +70,39 @@ def get_buyboxwinner(message_df):
 
 
 def get_sku(asin):
-    """We assume you have max one offer per type."""
+    """Return your listings for an asin, both for prime and nonprime."""
+    # We assume you have max one offer per type, or we use a random one
     prime_offer = list(
         mapping[mapping.asin == asin + '_prime'].seller_sku.values)
     nonprime_offer = list(
         mapping[mapping.asin == asin + '_seller'].seller_sku.values)
-    return (prime_offer, nonprime_offer)
+    return (prime_offer[0], nonprime_offer[0])
+
+
+def compare_prime_type(sku, winner):
+    """Easier to compare listings of different types."""
+    compare = zip(sku, winner)
+    # x = [prime_sku, prime_price], y = [nonprime_sku, nonprime_price]
+    # there are 3 common cases, same listingtyp than winner
+    # different listingtype than winner, no listing at all.
+    # probably we need to define all permutations
+    # comment: own_listing_type -> buyboxwinner_listing_type
+    # than we can apply tactics for each case
+    if compare[0][0] and compare[0][1]:
+        pass
+        # prime -> prime
+    elif compare[1][0] and compare[1][1]:
+        pass
+        # nonprime -> nonprime
+    elif compare[0][0] and compare[1][1]:
+        pass
+        # prime -> nonprime
+    elif compare[1][0] and compare[0][1]:
+        pass
+        # nonprime -> prime
+    else:
+        # nobuyboxwinner
+        assert any(compare) is False
 
 
 def matchprice(sku, winner):
@@ -114,23 +145,20 @@ def main():
         starttime = time.time()
         new_prices = []
         for asin in r.smembers('updated_asins'):
-            print(asin)
-            r.srem('updated_asins', asin)  # remove memo to process asin
             message = get_latest_message(asin)
+            r.srem('updated_asins', asin)  # remove memo to process asin
             if not isinstance(message, bool):
                 # all rows of one message have the same date
                 winner = get_buyboxwinner(message)
-                skutuple = get_sku(asin)
-                sku, buyboxprice = matchprice(skutuple, winner)
-                if sku and buyboxprice and boundaries(sku, buyboxprice):
-                    print(sku, buyboxprice)
-                    new_prices.append([sku, buyboxprice])
+                own_skus = get_sku(asin)  # max one for each type
+                sku, new_price = matchprice(own_skus, winner)
+                if sku and new_price and boundaries(sku, new_price):
+                    new_prices.append([sku, new_price])
                     # we store the action in redis
-                    score = dt.datetime.utcnow().timestamp()
                     time_changed = message['time_changed'][0].isoformat()
-                    # the key considers changes of asin and sku linking
-                    r.zadd(f'action_{asin}_{sku}', score,
-                           f'{buyboxprice}_{time_changed}')
+                    # we will use the redis stream datatype
+                    r.xadd('actions', {'asin': asin, 'isprime': isprime, 'sku': sku,
+                           'new_price': new_price, 'time_changed': time_changed})
 
         feed_data = create_feed(new_prices)
         feeds_api = mws.Feeds(**helper.mwscred)

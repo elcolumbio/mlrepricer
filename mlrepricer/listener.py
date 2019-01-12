@@ -80,6 +80,7 @@ def start_database():
 def store_into_database(db, asin, score, message):
     """Store the complete message from the aws queue, we parse it later."""
     db.zadd(asin, float(score), str(message))
+    # better use pub/sub
     db.sadd('updated_asins', asin)  # memo that we have to take action
     return True
 
