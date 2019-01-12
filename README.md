@@ -62,6 +62,10 @@ So copy mlrepricer/mlrepricer/configs.yaml to the default location ~/.config/mlr
 Or change the path_to_config in the setup package.
 
 ## Installation
+I run it on Ubuntu.
+You can run it also on Windows, if you want to use redis you can run redis under WSL.
+Right now i start redis manually in the bash on Windows.
+
 You can clone it locally and cd into the top level folder.
 and install it with: pip install .
 
