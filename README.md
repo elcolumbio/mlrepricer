@@ -52,8 +52,7 @@ For more uptodate guides please check out the notebooks.
 
 Setup Boto3 credentials for aws sqs:
 ~/.aws/credentials:
-```
-[default]
+```python
 aws_access_key_id = YOUR_ACCESS_KEY
 aws_secret_access_key = YOUR_SECRET_KEY
 ```
@@ -68,3 +67,10 @@ and install it with: pip install .
 
 ## Usage
 See the notebooks. Download this repo and unpack it, or render them in github.
+
+## Contribution
+Everyone is welcome to contribute.
+A tipp for cleaning all notebooks: before pushing your code, in the commandline cd into jupyter and run this command:
+```bash
+mlrepricer_private\jupyter> jupyter nbconvert --ClearOutputPreprocessor.enabled=True --inplace **.ipynb
+```
