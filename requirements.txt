@@ -1,8 +1,9 @@
+boto3
+lxml
+mws
+plotly
+pytest
+redis
+requests
 ruamel.yaml
 xmltodict
-boto3
-mws
-pytest
-requests
-lxml
-plotly

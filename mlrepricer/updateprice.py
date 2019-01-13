@@ -12,7 +12,7 @@ from mlrepricer import parser, helper, setup, minmax
 mwsid = helper.mwscred['account_id']
 decimal = setup.decimal
 
-r = redis.StrictRedis(**helper.rediscred, decode_responses=True)
+r = redis.Redis(**helper.rediscred, decode_responses=True)
 mapping = minmax.load_csv()
 
 
@@ -76,7 +76,11 @@ def get_sku(asin):
         mapping[mapping.asin == asin + '_prime'].seller_sku.values)
     nonprime_offer = list(
         mapping[mapping.asin == asin + '_seller'].seller_sku.values)
-    return (prime_offer[0], nonprime_offer[0])
+    if len(prime_offer) > 1:  # ignore duplicate same type of listing
+        prime_offer = prime_offer[0] 
+    if len(nonprime_offer) > 1:
+        nonprime_offer = nonprime_offer[0]
+    return (prime_offer, nonprime_offer)
 
 
 def compare_prime_type(sku, winner):
@@ -157,8 +161,8 @@ def main():
                     # we store the action in redis
                     time_changed = message['time_changed'][0].isoformat()
                     # we will use the redis stream datatype
-                    r.xadd('actions', {'asin': asin, 'isprime': isprime, 'sku': sku,
-                           'new_price': new_price, 'time_changed': time_changed})
+                    print(redis.__version__)
+                    r.xadd('actions', {'asin': asin, 'sku': sku, 'new_price': new_price, 'time_changed': time_changed})
 
         feed_data = create_feed(new_prices)
         feeds_api = mws.Feeds(**helper.mwscred)

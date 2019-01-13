@@ -74,12 +74,12 @@ def quickparse_message(message):
 def start_database():
     """We use redis as the default, feel free to use whatever you want."""
     # ToDO for windows WSL how to i start the redis server?
-    return redis.StrictRedis(**helper.rediscred, decode_responses=True)
+    return redis.Redis(**helper.rediscred, decode_responses=True)
 
 
 def store_into_database(db, asin, score, message):
     """Store the complete message from the aws queue, we parse it later."""
-    db.zadd(asin, float(score), str(message))
+    db.zadd(asin, {str(message): float(score)})
     # better use pub/sub
     db.sadd('updated_asins', asin)  # memo that we have to take action
     return True
