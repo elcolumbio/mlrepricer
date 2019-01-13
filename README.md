@@ -6,10 +6,6 @@ We find it ridiculous when 100 000 merchant are useing the same APIs, but there 
 We want to share knowledge, provide the data infrastracture where you can deploy your strategies on top.
 There is nothing which couldnt help us to move forward.
 
-Since the maintainer is a programming newbie.
-We are first aiming for the most simple pricing functionality.
-With a lot of tests and fall back functions.
-Tough we are aiming for the highest coding quality from the start.
 
 We provide you some modules you can use in your existing infrastructure.
 It should be very easy to do so.
@@ -32,20 +28,9 @@ Instead you maybe want make this framework better:)
 
 ![](https://innotrade24.com/index.php/s/f8y4opak4BKes3J/preview)
 
-A python pricing analysis project for Amazon Marketplace Sellers.
-Plus we provide the basic box where you can run your ml algorithms.
-
 ### price volatility of buyboxwinners
 
 ![volatility](https://innotrade24.com/index.php/s/RR9WWwGgFJGXjTL/preview)
-
-You can use methods for easy access and training models.
-If we use the same features we can find a more accurate model, together.
-A repricer model is quite complex.
-It's like scissors and papers with price elasticity and estimates about sales.
-For the start we can make it as simple as possible.
-If this is going very well, we will build a live repricer which is constantly learning.
-
 
 ## How to get started?
 For more uptodate guides please check out the notebooks.
@@ -62,14 +47,18 @@ So copy mlrepricer/mlrepricer/configs.yaml to the default location ~/.config/mlr
 Or change the path_to_config in the setup package.
 
 ## Installation
-I run it on Ubuntu.
-You can run it also on Windows, if you want to use redis you can run redis under WSL.
-Right now i start redis manually in the bash on Windows.
+It should work on Linux and Windows.
 
+Database choice: We should make it easy to use whatever you want.
+For now i go with redis (version '3.0.1' +), on windows i run it manually under WSL.
+
+Package:
 You can clone it locally and cd into the top level folder.
 and install it with: pip install .
 
+Dependencies are in requirements.txt, except of mws i use:
 I use my version of mws: https://github.com/innotrade24/python-amazon-mws1
+
 ## Usage
 See the notebooks. Download this repo and unpack it, or render them in github.
 
