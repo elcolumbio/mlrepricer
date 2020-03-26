@@ -17,6 +17,12 @@ This is not a repricer. It should be used for statistical and ml analysis of you
 It would be nice if we share statistic analysis and discuss them and validate them.
 The data on it's own is not valueable.
 
+# Where are we?
+Right now you can use existing simple rules and easy add your own rules.
+There is no framework for a multi agent problem yet.
+Right now it is only build for redis, you should be able to replace it in most parts easy.
+How long do you need for setup for the first time?
+
 # Where are we going?
 There won't be a service ever. You can see that by how flexible we build it, for datastorage, modularity.
 We rather want to take some of the heavy lifting when you handle price data.
