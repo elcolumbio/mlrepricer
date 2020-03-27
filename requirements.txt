@@ -1,9 +1,13 @@
 boto3
 lxml
-mws
 plotly
+pandas
 pytest
+pyarrow
 redis
 requests
 ruamel.yaml
 xmltodict
+
+
+-e git://github.com/python-amazon-mws/python-amazon-mws@feature-xmltodict-revamp#egg=mws

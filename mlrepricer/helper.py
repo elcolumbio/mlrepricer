@@ -5,6 +5,8 @@ from enum import Enum
 import mws
 import numpy as np
 import pandas as pd
+import pyarrow as pa
+import pyarrow.parquet as pq
 from time import sleep
 
 from . import setup
@@ -50,14 +52,13 @@ class Marketplaces(Enum):
 
 def dump_dataframe(df, foldername):
     """Dump pandas df for storage."""
-    with open(datafolder+foldername, 'wb') as f:
-        df.to_msgpack(f)
+    output = pa.Table.from_pandas(df)
+    pq.write_table(output, datafolder+foldername)
 
 
 def load_dataframe(foldername):
     """Load pandas df from storage."""
-    with open(datafolder+foldername, 'rb') as f:
-        return pd.read_msgpack(f)
+    return pq.read_table(datafolder+foldername).to_pandas()
 
 
 def cleanup(df):
