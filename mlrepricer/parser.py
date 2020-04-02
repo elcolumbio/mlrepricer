@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 """
-We call this quite hidden in listener.py in the dump_message_tosql method.
-Before we used a file dump and parsed afterwards.
+We call this quite hidden in updateprice.
+https://github.com/elcolumbio/mlrepricer/blob/bf33304667b36bbcd3d67d8e29d7ec667a4744f6/mlrepricer/updateprice.py#L41 .
 """
 
 import datetime
