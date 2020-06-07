@@ -6,12 +6,13 @@ https://github.com/elcolumbio/mlrepricer/blob/bf33304667b36bbcd3d67d8e29d7ec667a
 """
 
 import datetime
+import mws
 import pandas as pd
 import xmltodict
 
 from . import helper, setup
 
-marketplaceid = helper.Marketplaces[setup.configs['region']].marketplace_id
+marketplaceid = mws.mws.Marketplaces[setup.configs['region']].marketplace_id
 currencycode = setup.configs['currencycode']
 
 

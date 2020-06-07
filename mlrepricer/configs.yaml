@@ -19,7 +19,7 @@ account_id: None
 Redis:
     host: localhost
     port: 6379
-    password: None
+    password: Null
 
 ##### Below are optional or outdated
 # local SQLite data dump, find it in your root datafolder.

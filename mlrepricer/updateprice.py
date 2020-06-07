@@ -77,7 +77,7 @@ def get_sku(asin):
     nonprime_offer = list(
         mapping[mapping.asin == asin + '_seller'].seller_sku.values)
     if len(prime_offer) > 1:  # ignore duplicate same type of listing
-        prime_offer = prime_offer[0] 
+        prime_offer = prime_offer[0]
     if len(nonprime_offer) > 1:
         nonprime_offer = nonprime_offer[0]
     return (prime_offer, nonprime_offer)
@@ -162,6 +162,7 @@ def main():
                     time_changed = message['time_changed'][0].isoformat()
                     # we will use the redis stream datatype
                     print(redis.__version__)
+                    print(f'action: {asin}, {new_price}')
                     r.xadd('actions', {'asin': asin, 'sku': sku, 'new_price': new_price, 'time_changed': time_changed})
 
         feed_data = create_feed(new_prices)

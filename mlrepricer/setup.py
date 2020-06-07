@@ -9,7 +9,7 @@ yaml.default_flow_style = False
 
 
 homedir = os.path.expanduser('~')
-path_to_config = f'{homedir}/.config/mlrepricer/configs.yaml'  # '/home/jeff/'
+path_to_config = f'{homedir}/.config/mlrepricer_configs.yaml'  # '/home/jeff/'
 path_to_config = f'{homedir}/mlrepricer_configs.yaml'  # '/home/jeff/'
 
 
