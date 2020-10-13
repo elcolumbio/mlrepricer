@@ -1,6 +1,6 @@
 # mlrepricer
 
-Pricing on platforms is essential. Most of the technical parts close to the platform is similiar for merchants.
+Pricing on platforms is essential. Most of the technical parts close to the platform are similiar for merchants.
 That's why we like to introduce a library for all merchants.
 
 ## What is the philosophy behind pricing?
