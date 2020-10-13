@@ -1,7 +1,11 @@
 # mlrepricer
 
-Pricing on platforms is essential.
-We find it ridiculous when 100 000 merchant are useing the same APIs, but there are no Open Source libraries.
+Pricing on platforms is essential. Most of the technical parts close to the platform is similiar for merchants.
+That's why we like to introduce a library for all merchants.
+
+## What is the philosophy behind pricing?
+There is a rich world of concepts, strategies and tactics about how to set a price at any given point in time.
+While we are open to all of them. We believe that it is not a zero sum game for all buyers and sellers.
 
 We want to share knowledge, provide the data infrastracture where you can deploy your strategies on top.
 There is nothing which couldnt help us to move forward.
