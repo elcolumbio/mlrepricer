@@ -1,3 +1,11 @@
+# Status
+
+This has a character of an MVP pet project.
+
+Things to do:
+- introduce pydantic for type checking and metadata
+- get a basic reinforcement algorithm to work
+
 # mlrepricer
 
 Pricing on platforms is essential. Most of the technical parts close to the platform are similiar for merchants.
